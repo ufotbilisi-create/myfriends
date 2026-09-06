@@ -3,270 +3,553 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#111827">
 
-  <title>Friends</title>
+  <meta name="theme-color" content="#2563eb">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <title>👥 Friends</title>
 
   <style>
     * {
       box-sizing: border-box;
     }
 
+    html,
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f3f4f6;
-      color: #111827;
+      padding: 0;
+      min-height: 100%;
+      font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+      background: #eef2f7;
+      color: #172033;
     }
 
-    .container {
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 18px;
-      padding: 24px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-      margin-bottom: 20px;
-    }
-
-    h1, h2, h3 {
-      margin-top: 0;
-    }
-
-    .logo {
-      text-align: center;
-      font-size: 34px;
-      font-weight: bold;
-      margin: 20px 0;
-    }
-
+    button,
     input {
-      width: 100%;
-      padding: 13px 14px;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
-      font-size: 16px;
-      margin-bottom: 12px;
-      outline: none;
-    }
-
-    input:focus {
-      border-color: #6366f1;
+      font: inherit;
     }
 
     button {
-      border: 0;
-      border-radius: 10px;
-      padding: 13px 18px;
-      font-size: 16px;
       cursor: pointer;
-      background: #4f46e5;
-      color: white;
-      width: 100%;
-      margin-top: 6px;
-    }
-
-    button:hover {
-      opacity: 0.92;
-    }
-
-    button.secondary {
-      background: #6b7280;
-    }
-
-    button.danger {
-      background: #dc2626;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-
-    .tabs button {
-      margin: 0;
-    }
-
-    .tabs button.active {
-      background: #111827;
+      border: 0;
     }
 
     .hidden {
       display: none !important;
     }
 
-    .message {
-      padding: 12px;
-      border-radius: 10px;
-      margin: 12px 0;
-      background: #eef2ff;
-      color: #3730a3;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
+    /* =========================
+       AUTH
+    ========================= */
 
-    .message.error {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .message.success {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .user-bar {
+    .auth-screen {
+      position: fixed;
+      inset: 0;
+      background: #172033ee;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 430px;
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 20px 70px #0005;
+    }
+
+    .auth-title {
+      text-align: center;
+      margin-bottom: 5px;
+      font-size: 28px;
+    }
+
+    .auth-subtitle {
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
       margin-bottom: 20px;
     }
 
-    .user-name {
+    .auth-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 11px;
+      border-radius: 10px;
+      background: #e2e8f0;
       font-weight: bold;
-      font-size: 18px;
     }
 
-    .logout {
-      width: auto;
-      margin: 0;
-      padding: 10px 16px;
+    .auth-tab.active {
+      background: #2563eb;
+      color: white;
     }
 
-    .upload-area {
-      border: 2px dashed #9ca3af;
-      border-radius: 16px;
-      padding: 35px 20px;
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .input {
+      width: 100%;
+      padding: 12px 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      outline: none;
+      background: white;
+    }
+
+    .input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px #2563eb18;
+    }
+
+    .primary-button {
+      background: #2563eb;
+      color: white;
+      padding: 12px 15px;
+      border-radius: 10px;
+      font-weight: 800;
+    }
+
+    .auth-button {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .auth-message {
+      min-height: 20px;
+      margin-top: 10px;
+      font-size: 13px;
       text-align: center;
-      cursor: pointer;
-      background: #f9fafb;
-      transition: 0.2s;
     }
 
-    .upload-area:hover {
-      background: #eef2ff;
-      border-color: #6366f1;
+    .auth-note {
+      margin-top: 12px;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.5;
+      text-align: center;
     }
 
-    .upload-area.dragover {
-      background: #e0e7ff;
-      border-color: #4f46e5;
+    /* =========================
+       APP
+    ========================= */
+
+    .app {
+      max-width: 1150px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: white;
+      display: flex;
+      flex-direction: column;
     }
 
-    .upload-icon {
-      font-size: 42px;
+    .topbar {
+      background: #2563eb;
+      color: white;
+      padding: 13px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .user-info {
+      font-size: 12px;
+      opacity: .9;
+      margin-top: 2px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .top-button {
+      background: white;
+      color: #172033;
+      padding: 9px 12px;
+      border-radius: 9px;
+      font-weight: 700;
+    }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    .sidebar {
+      background: #f8fafc;
+      border-right: 1px solid #e2e8f0;
+      padding: 14px;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 900;
       margin-bottom: 10px;
     }
 
-    #fileInput {
+    .search-row {
+      display: flex;
+      gap: 7px;
+    }
+
+    .search-row .input {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .search-button {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-weight: 800;
+    }
+
+    .search-status {
+      font-size: 12px;
+      color: #64748b;
+      min-height: 18px;
+      margin-top: 7px;
+    }
+
+    .search-result {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 11px;
+      margin-top: 8px;
+      cursor: pointer;
+    }
+
+    .search-result:hover {
+      border-color: #93c5fd;
+    }
+
+    .username {
+      font-weight: 900;
+    }
+
+    .muted {
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    .conversation-list {
+      margin-top: 6px;
+    }
+
+    .conversation {
+      padding: 11px;
+      margin-top: 7px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .conversation:hover {
+      border-color: #93c5fd;
+    }
+
+    .conversation.active {
+      background: #dbeafe;
+      border-color: #93c5fd;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .empty-chat {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px;
+      color: #64748b;
+      min-height: 250px;
+    }
+
+    .empty-icon {
+      font-size: 50px;
+    }
+
+    /* =========================
+       CHAT
+    ========================= */
+
+    .chat-area {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 350px;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 16px;
+      border-bottom: 1px solid #e2e8f0;
+      background: white;
+    }
+
+    .chat-header-name {
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .back-button {
       display: none;
+      background: #e2e8f0;
+      border-radius: 9px;
+      padding: 8px 10px;
+      font-weight: 800;
+    }
+
+    .messages {
+      flex: 1;
+      min-height: 280px;
+      overflow-y: auto;
+      padding: 16px;
+      background: linear-gradient(#f8fafc, #eef2f7);
+    }
+
+    .message {
+      max-width: 78%;
+      background: white;
+      padding: 10px 12px;
+      border-radius: 14px;
+      margin-bottom: 9px;
+      box-shadow: 0 1px 5px #0000000c;
+      overflow-wrap: anywhere;
+    }
+
+    .message.mine {
+      margin-left: auto;
+      background: #dbeafe;
+    }
+
+    .message-text {
+      white-space: pre-wrap;
+      line-height: 1.4;
+    }
+
+    .message-time {
+      margin-top: 5px;
+      color: #64748b;
+      font-size: 10px;
+    }
+
+    .composer {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      border-top: 1px solid #e2e8f0;
+      background: white;
+    }
+
+    .composer .input {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .send-button {
+      padding: 11px 16px;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-weight: 900;
+    }
+
+    /* =========================
+       FILES
+    ========================= */
+
+    .files-section {
+      border-top: 1px solid #e2e8f0;
+      padding: 14px 16px;
+      background: white;
+    }
+
+    .files-title {
+      font-size: 16px;
+      font-weight: 900;
+      margin-bottom: 3px;
+    }
+
+    .drop-zone {
+      margin-top: 10px;
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      background: #f8fafc;
+      cursor: pointer;
+    }
+
+    .drop-zone.dragging {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .upload-status {
+      margin-top: 7px;
+      color: #64748b;
+      font-size: 12px;
+      min-height: 18px;
     }
 
     .file-list {
-      margin-top: 20px;
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
     }
 
     .file-item {
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 12px;
-      background: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px;
     }
 
     .file-info {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
+      min-width: 0;
     }
 
     .file-name {
-      font-weight: bold;
-      word-break: break-word;
-    }
-
-    .file-meta {
-      font-size: 13px;
-      color: #6b7280;
-      margin-top: 5px;
+      font-weight: 800;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .file-actions {
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px;
+      gap: 6px;
+      flex-shrink: 0;
     }
 
-    .file-actions button {
-      width: auto;
-      margin: 0;
-      padding: 9px 14px;
-      font-size: 14px;
+    .file-button {
+      background: #e2e8f0;
+      color: #172033;
+      padding: 7px 9px;
+      border-radius: 8px;
+      font-weight: 700;
     }
 
-    .progress {
-      width: 100%;
-      height: 8px;
-      background: #e5e7eb;
-      border-radius: 20px;
-      overflow: hidden;
-      margin-top: 12px;
-      display: none;
+    .delete-button {
+      background: #fee2e2;
+      color: #991b1b;
     }
 
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: #4f46e5;
-      transition: width 0.2s;
-    }
+    /* =========================
+       MOBILE
+    ========================= */
 
-    .empty {
-      text-align: center;
-      color: #6b7280;
-      padding: 25px;
-    }
+    @media (max-width: 760px) {
 
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #6b7280;
-    }
-
-    .small {
-      font-size: 13px;
-      color: #6b7280;
-      line-height: 1.5;
-    }
-
-    @media (max-width: 600px) {
-      .container {
-        padding: 12px;
+      .topbar {
+        padding: 11px 12px;
       }
 
-      .card {
-        padding: 18px;
-        border-radius: 14px;
+      .brand {
+        font-size: 18px;
       }
 
-      .logo {
-        font-size: 28px;
+      .top-button {
+        padding: 8px 9px;
+        font-size: 12px;
       }
 
-      .file-info {
+      .main-layout {
+        display: block;
+      }
+
+      .sidebar {
+        display: none;
+        border-right: 0;
+        border-bottom: 1px solid #e2e8f0;
+        max-height: 45vh;
+      }
+
+      .sidebar.mobile-open {
+        display: block;
+      }
+
+      .content {
+        min-height: 0;
+      }
+
+      .chat-area {
+        min-height: 55vh;
+      }
+
+      .back-button {
+        display: block;
+      }
+
+      .messages {
+        padding: 10px;
+      }
+
+      .message {
+        max-width: 88%;
+      }
+
+      .files-section {
+        padding: 10px;
+      }
+
+      .file-item {
         align-items: flex-start;
+      }
+
+      .file-actions {
+        flex-direction: column;
       }
     }
   </style>
@@ -274,419 +557,585 @@
 
 <body>
 
-<div class="container">
+<!-- =========================
+     AUTH SCREEN
+========================= -->
 
-  <div class="logo">
-    👥 Friends
-  </div>
+<div id="authScreen" class="auth-screen">
 
-  <!-- AUTH -->
-  <section id="authSection" class="card">
+  <div class="auth-card">
 
-    <div class="tabs">
-      <button id="loginTab" class="active" onclick="showLogin()">
+    <div class="auth-title">
+      👥 Friends
+    </div>
+
+    <div class="auth-subtitle">
+      პირადი ფაილები და პირადი ჩატი
+    </div>
+
+    <div class="auth-tabs">
+      <button id="loginTab" class="auth-tab active">
         შესვლა
       </button>
 
-      <button id="registerTab" onclick="showRegister()">
+      <button id="registerTab" class="auth-tab">
         რეგისტრაცია
       </button>
     </div>
 
-    <!-- LOGIN -->
-    <div id="loginForm">
-
-      <h2>შესვლა</h2>
+    <form id="authForm" class="auth-form">
 
       <input
-        id="loginEmail"
+        id="usernameInput"
+        class="input"
+        type="text"
+        placeholder="Username"
+        maxlength="40"
+        autocomplete="username"
+        required
+      >
+
+      <input
+        id="emailInput"
+        class="input hidden"
         type="email"
         placeholder="ელფოსტა"
         autocomplete="email"
       >
 
       <input
-        id="loginPassword"
+        id="passwordInput"
+        class="input"
         type="password"
         placeholder="პაროლი"
+        maxlength="200"
         autocomplete="current-password"
+        required
       >
 
-      <button onclick="login()">
+      <button
+        id="authSubmit"
+        class="primary-button auth-button"
+        type="submit"
+      >
         შესვლა
       </button>
 
+    </form>
+
+    <div id="authMessage" class="auth-message"></div>
+
+    <div class="auth-note">
+      Username და პაროლი თავად მოიფიქრე.
+      შენი პირადი ფაილები სხვა მომხმარებლებისთვის დახურულია.
     </div>
 
-    <!-- REGISTER -->
-    <div id="registerForm" class="hidden">
-
-      <h2>რეგისტრაცია</h2>
-
-      <input
-        id="registerUsername"
-        type="text"
-        placeholder="მომხმარებლის სახელი"
-        autocomplete="username"
-      >
-
-      <input
-        id="registerEmail"
-        type="email"
-        placeholder="ელფოსტა"
-        autocomplete="email"
-      >
-
-      <input
-        id="registerPassword"
-        type="password"
-        placeholder="პაროლი"
-        autocomplete="new-password"
-      >
-
-      <input
-        id="registerPassword2"
-        type="password"
-        placeholder="გაიმეორე პაროლი"
-        autocomplete="new-password"
-      >
-
-      <button onclick="register()">
-        ანგარიშის შექმნა
-      </button>
-
-      <p class="small">
-        მომხმარებლის სახელი და პაროლი თავად აირჩიე.
-      </p>
-
-    </div>
-
-    <div id="authMessage" class="message hidden"></div>
-
-  </section>
-
-
-  <!-- APP -->
-  <section id="appSection" class="hidden">
-
-    <div class="card">
-
-      <div class="user-bar">
-
-        <div>
-          <div class="small">მომხმარებელი</div>
-          <div id="currentUsername" class="user-name"></div>
-        </div>
-
-        <button
-          class="secondary logout"
-          onclick="logout()"
-        >
-          გამოსვლა
-        </button>
-
-      </div>
-
-      <h2>ჩემი ფაილები</h2>
-
-      <div
-        id="uploadArea"
-        class="upload-area"
-      >
-
-        <div class="upload-icon">📁</div>
-
-        <strong>
-          დააჭირე აქ ან გადაათრიე ფაილი
-        </strong>
-
-        <p class="small">
-          ფოტო, ვიდეო ან დოკუმენტი<br>
-          მაქსიმუმ 50 MB
-        </p>
-
-        <input
-          id="fileInput"
-          type="file"
-          multiple
-        >
-
-      </div>
-
-      <div class="progress" id="progress">
-        <div
-          class="progress-bar"
-          id="progressBar"
-        ></div>
-      </div>
-
-      <div id="uploadMessage" class="message hidden"></div>
-
-    </div>
-
-
-    <div class="card">
-
-      <h2>ატვირთული ფაილები</h2>
-
-      <div id="fileList" class="file-list">
-        <div class="loading">
-          იტვირთება...
-        </div>
-      </div>
-
-    </div>
-
-  </section>
+  </div>
 
 </div>
 
 
+<!-- =========================
+     APP
+========================= -->
+
+<div class="app">
+
+  <header class="topbar">
+
+    <div>
+      <div class="brand">
+        👥 Friends
+      </div>
+
+      <div id="userLabel" class="user-info">
+        ავტორიზაცია
+      </div>
+    </div>
+
+    <div class="top-actions">
+
+      <button
+        id="mobileUsersButton"
+        class="top-button"
+      >
+        👥 მომხმარებლები
+      </button>
+
+      <button
+        id="logoutButton"
+        class="top-button"
+      >
+        გამოსვლა
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <div class="main-layout">
+
+    <!-- =========================
+         SIDEBAR
+    ========================= -->
+
+    <aside id="sidebar" class="sidebar">
+
+      <div class="section-title">
+        💬 ახალი ჩატი
+      </div>
+
+      <div class="search-row">
+
+        <input
+          id="userSearchInput"
+          class="input"
+          type="text"
+          placeholder="username"
+          maxlength="40"
+          autocomplete="off"
+        >
+
+        <button
+          id="searchButton"
+          class="search-button"
+        >
+          ძებნა
+        </button>
+
+      </div>
+
+      <div
+        id="searchStatus"
+        class="search-status"
+      ></div>
+
+      <div id="searchResults"></div>
+
+
+      <div
+        class="section-title"
+        style="margin-top:20px"
+      >
+        ჩემი ჩატები
+      </div>
+
+      <div
+        id="conversationList"
+        class="conversation-list"
+      ></div>
+
+    </aside>
+
+
+    <!-- =========================
+         CONTENT
+    ========================= -->
+
+    <main class="content">
+
+      <!-- EMPTY CHAT -->
+
+      <div
+        id="emptyChat"
+        class="empty-chat"
+      >
+
+        <div>
+
+          <div class="empty-icon">
+            💬
+          </div>
+
+          <h3>
+            აირჩიე მომხმარებელი
+          </h3>
+
+          <div>
+            მოძებნე username-ით და დაიწყე პირადი საუბარი.
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- CHAT -->
+
+      <div
+        id="chatArea"
+        class="chat-area hidden"
+      >
+
+        <div class="chat-header">
+
+          <button
+            id="backButton"
+            class="back-button"
+          >
+            ←
+          </button>
+
+          <div>
+
+            <div
+              id="chatUsername"
+              class="chat-header-name"
+            ></div>
+
+            <div class="muted">
+              პირადი ჩატი
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="messages"
+          class="messages"
+        ></div>
+
+
+        <form
+          id="messageForm"
+          class="composer"
+        >
+
+          <input
+            id="messageInput"
+            class="input"
+            type="text"
+            maxlength="4000"
+            placeholder="დაწერე შეტყობინება..."
+            autocomplete="off"
+          >
+
+          <button
+            class="send-button"
+            type="submit"
+          >
+            გაგზავნა
+          </button>
+
+        </form>
+
+      </div>
+
+
+      <!-- =========================
+           FILES
+      ========================= -->
+
+      <section class="files-section">
+
+        <div class="files-title">
+          📁 ჩემი ფაილები
+        </div>
+
+        <div class="muted">
+          ფოტო, ვიდეო ან დოკუმენტი
+          • მაქსიმუმ 50 MB
+          • ავტომატურად იშლება 3 დღეში
+        </div>
+
+
+        <div
+          id="dropZone"
+          class="drop-zone"
+        >
+
+          ფაილის ასატვირთად დააჭირე აქ
+          ან გადაათრიე ფაილი
+
+          <input
+            id="fileInput"
+            type="file"
+            hidden
+          >
+
+        </div>
+
+
+        <div
+          id="uploadStatus"
+          class="upload-status"
+        ></div>
+
+
+        <div
+          id="fileList"
+          class="file-list"
+        ></div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+</div>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
 <script>
-  /*
-    =====================================================
-    SUPABASE CONFIGURATION
-    =====================================================
-  */
 
-  const SUPABASE_URL =
-    "https://ihuiepozcsptkxslpgjb.supabase.co";
+/* =========================================================
+   SUPABASE CONFIGURATION
+========================================================= */
 
-  /*
-    აქ ჩასვი შენი Publishable key.
+const SUPABASE_URL =
+  "https://ihuiepozcsptkxslpgjb.supabase.co";
 
-    მაგალითად:
+/*
+  აქ ჩასვი შენი Supabase Publishable key.
 
-    const SUPABASE_ANON_KEY =
-      "sb_publishable_xxxxxxxxxxxxxxxxx";
-  */
+  მაგალითად:
 
   const SUPABASE_ANON_KEY =
-    "sb_publishable_iM_PP_hIpGCsAPn1-lAj3w_FH9kI3fS";
+    "eyJhbGciOi...";
+
+  Secret key / Service Role key აქ არ ჩასვა.
+*/
+
+const SUPABASE_ANON_KEY =
+  "აქ_ჩასვი_შენი_SUPABASE_PUBLISHABLE_KEY";
 
 
-  /*
-    =====================================================
-    SUPABASE INITIALIZATION
-    =====================================================
-  */
-
-  let supabaseClient = null;
-  let currentUser = null;
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
 
 
-  function isConfigured() {
+/* =========================================================
+   GLOBAL VARIABLES
+========================================================= */
 
-    return (
-      SUPABASE_URL &&
-      SUPABASE_ANON_KEY &&
-      !SUPABASE_ANON_KEY.includes("ჩასვი_აქ") &&
-      !SUPABASE_ANON_KEY.includes("YOUR_")
-    );
+let currentUser = null;
 
-  }
+let currentProfile = null;
 
+let currentChatUser = null;
 
-  if (isConfigured()) {
+let realtimeChannels = [];
 
-    supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-      );
-
-  } else {
-
-    showAuthMessage(
-      "Supabase ჯერ არ არის კონფიგურირებული.\n\n" +
-      "index.html-ში ჩასვი შენი Publishable Key.",
-      true
-    );
-
-  }
+let conversations = new Map();
 
 
-  /*
-    =====================================================
-    AUTH UI
-    =====================================================
-  */
+/* =========================================================
+   HELPERS
+========================================================= */
 
-  function showLogin() {
-
-    document
-      .getElementById("loginForm")
-      .classList.remove("hidden");
-
-    document
-      .getElementById("registerForm")
-      .classList.add("hidden");
-
-    document
-      .getElementById("loginTab")
-      .classList.add("active");
-
-    document
-      .getElementById("registerTab")
-      .classList.remove("active");
-
-    clearAuthMessage();
-  }
+function $(id) {
+  return document.getElementById(id);
+}
 
 
-  function showRegister() {
+function escapeHtml(value) {
 
-    document
-      .getElementById("loginForm")
-      .classList.add("hidden");
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    function(char) {
 
-    document
-      .getElementById("registerForm")
-      .classList.remove("hidden");
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char];
 
-    document
-      .getElementById("loginTab")
-      .classList.remove("active");
-
-    document
-      .getElementById("registerTab")
-      .classList.add("active");
-
-    clearAuthMessage();
-  }
-
-
-  function showAuthMessage(message, error = false) {
-
-    const box =
-      document.getElementById("authMessage");
-
-    box.textContent = message;
-
-    box.classList.remove(
-      "hidden",
-      "error",
-      "success"
-    );
-
-    box.classList.add(
-      error ? "error" : "success"
-    );
-  }
-
-
-  function clearAuthMessage() {
-
-    const box =
-      document.getElementById("authMessage");
-
-    box.classList.add("hidden");
-
-    box.textContent = "";
-
-  }
-
-
-  function showUploadMessage(message, error = false) {
-
-    const box =
-      document.getElementById("uploadMessage");
-
-    box.textContent = message;
-
-    box.classList.remove(
-      "hidden",
-      "error",
-      "success"
-    );
-
-    box.classList.add(
-      error ? "error" : "success"
-    );
-
-  }
-
-
-  /*
-    =====================================================
-    REGISTER
-    =====================================================
-  */
-
-  async function register() {
-
-    if (!supabaseClient) {
-
-      showAuthMessage(
-        "Supabase არ არის კონფიგურირებული.",
-        true
-      );
-
-      return;
     }
+  );
+
+}
+
+
+function formatDate(value) {
+
+  return new Date(value).toLocaleString(
+    "ka-GE",
+    {
+      day: "numeric",
+      month: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    }
+  );
+
+}
+
+
+function formatBytes(bytes) {
+
+  if (bytes === null || bytes === undefined) {
+    return "";
+  }
+
+  if (bytes < 1024) {
+    return bytes + " B";
+  }
+
+  if (bytes < 1024 * 1024) {
+    return (bytes / 1024).toFixed(1) + " KB";
+  }
+
+  if (bytes < 1024 * 1024 * 1024) {
+    return (bytes / 1024 / 1024).toFixed(1) + " MB";
+  }
+
+  return (
+    bytes /
+    1024 /
+    1024 /
+    1024
+  ).toFixed(1) + " GB";
+
+}
+
+
+function authMessage(text, success = false) {
+
+  $("authMessage").textContent = text || "";
+
+  $("authMessage").style.color =
+    success
+      ? "#15803d"
+      : "#b91c1c";
+
+}
+
+
+function searchMessage(text) {
+
+  $("searchStatus").textContent =
+    text || "";
+
+}
+
+
+function uploadMessage(text) {
+
+  $("uploadStatus").textContent =
+    text || "";
+
+}
+
+
+/* =========================================================
+   AUTH TABS
+========================================================= */
+
+function showLogin() {
+
+  $("loginTab").classList.add("active");
+
+  $("registerTab").classList.remove("active");
+
+  $("emailInput").classList.add("hidden");
+
+  $("emailInput").required = false;
+
+  $("authSubmit").textContent =
+    "შესვლა";
+
+  $("passwordInput").autocomplete =
+    "current-password";
+
+  authMessage("");
+
+}
+
+
+function showRegister() {
+
+  $("registerTab").classList.add("active");
+
+  $("loginTab").classList.remove("active");
+
+  $("emailInput").classList.remove("hidden");
+
+  $("emailInput").required = true;
+
+  $("authSubmit").textContent =
+    "ანგარიშის შექმნა";
+
+  $("passwordInput").autocomplete =
+    "new-password";
+
+  authMessage("");
+
+}
+
+
+$("loginTab").onclick =
+  showLogin;
+
+
+$("registerTab").onclick =
+  showRegister;
+
+
+/* =========================================================
+   REGISTER / LOGIN
+========================================================= */
+
+$("authForm").addEventListener(
+  "submit",
+  async function(event) {
+
+    event.preventDefault();
+
+    authMessage("იტვირთება...", true);
 
 
     const username =
-      document
-        .getElementById("registerUsername")
+      $("usernameInput")
         .value
         .trim();
+
 
     const email =
-      document
-        .getElementById("registerEmail")
+      $("emailInput")
         .value
         .trim();
 
+
     const password =
-      document
-        .getElementById("registerPassword")
-        .value;
-
-    const password2 =
-      document
-        .getElementById("registerPassword2")
+      $("passwordInput")
         .value;
 
 
-    if (!username) {
-
-      showAuthMessage(
-        "შეიყვანე მომხმარებლის სახელი.",
-        true
-      );
-
-      return;
-    }
+    const registerMode =
+      !$("emailInput")
+        .classList
+        .contains("hidden");
 
 
     if (username.length < 3) {
 
-      showAuthMessage(
-        "მომხმარებლის სახელი უნდა იყოს მინიმუმ 3 სიმბოლო.",
-        true
+      authMessage(
+        "Username მინიმუმ 3 სიმბოლო უნდა იყოს."
       );
 
       return;
     }
 
 
-    if (!email) {
+    if (
+      !/^[A-Za-z0-9_.-]+$/.test(username)
+    ) {
 
-      showAuthMessage(
-        "შეიყვანე ელფოსტა.",
-        true
-      );
-
-      return;
-    }
-
-
-    if (!password) {
-
-      showAuthMessage(
-        "შეიყვანე პაროლი.",
-        true
+      authMessage(
+        "Username-ში გამოიყენე მხოლოდ ლათინური ასოები, ციფრები, _ . -"
       );
 
       return;
@@ -695,997 +1144,1763 @@
 
     if (password.length < 6) {
 
-      showAuthMessage(
-        "პაროლი უნდა იყოს მინიმუმ 6 სიმბოლო.",
-        true
+      authMessage(
+        "პაროლი მინიმუმ 6 სიმბოლო უნდა იყოს."
       );
 
       return;
     }
-
-
-    if (password !== password2) {
-
-      showAuthMessage(
-        "პაროლები ერთმანეთს არ ემთხვევა.",
-        true
-      );
-
-      return;
-    }
-
-
-    showAuthMessage(
-      "რეგისტრაცია მიმდინარეობს..."
-    );
 
 
     try {
 
-      const {
-        data,
-        error
-      } =
-        await supabaseClient.auth.signUp({
+      /* =====================
+         REGISTER
+      ===================== */
 
-          email: email,
+      if (registerMode) {
 
-          password: password,
+        if (!email) {
 
-          options: {
+          authMessage(
+            "ელფოსტა აუცილებელია."
+          );
 
-            data: {
-              username: username
+          return;
+        }
+
+
+        const result =
+          await supabaseClient.auth.signUp({
+
+            email: email,
+
+            password: password,
+
+            options: {
+
+              data: {
+                username: username
+              }
+
             }
 
+          });
+
+
+        if (result.error) {
+          throw result.error;
+        }
+
+
+        if (result.data.user) {
+
+          const profileResult =
+            await supabaseClient
+              .from("profiles")
+              .upsert(
+                {
+                  id:
+                    result.data.user.id,
+
+                  username:
+                    username
+                },
+                {
+                  onConflict: "id"
+                }
+              );
+
+
+          if (profileResult.error) {
+            throw profileResult.error;
           }
 
-        });
+        }
 
 
-      if (error) {
-        throw error;
-      }
-
-
-      /*
-        მომხმარებლის პროფილს ჩვენი
-        Database Trigger ავტომატურად შექმნის.
-      */
-
-
-      if (data.user) {
-
-        showAuthMessage(
-          "რეგისტრაცია წარმატებით დასრულდა.\n" +
-          "ახლა შეგიძლია შეხვიდე ანგარიშში."
+        authMessage(
+          "ანგარიში შეიქმნა. ახლა შეგიძლია შეხვიდე.",
+          true
         );
 
-        document
-          .getElementById("loginEmail")
-          .value = email;
-
-        document
-          .getElementById("loginPassword")
-          .value = password;
 
         showLogin();
 
+
+        $("usernameInput").value =
+          username;
+
+
+        $("passwordInput").value =
+          "";
+
+
+        return;
       }
 
-    } catch (error) {
 
-      console.error(error);
+      /* =====================
+         LOGIN
+      ===================== */
 
-      showAuthMessage(
-        "რეგისტრაცია ვერ შესრულდა:\n\n" +
-        getErrorMessage(error),
-        true
-      );
-
-    }
-
-  }
+      let loginEmail =
+        $("usernameInput")
+          .value
+          .trim();
 
 
-  /*
-    =====================================================
-    LOGIN
-    =====================================================
-  */
+      /*
+        თუ მომხმარებელმა username ჩაწერა,
+        ვპოულობთ მის email-ს სპეციალური RPC-ით.
+      */
 
-  async function login() {
+      if (!loginEmail.includes("@")) {
 
-    if (!supabaseClient) {
-
-      showAuthMessage(
-        "Supabase არ არის კონფიგურირებული.",
-        true
-      );
-
-      return;
-    }
+        const rpc =
+          await supabaseClient.rpc(
+            "find_profile_login",
+            {
+              search_username:
+                loginEmail
+            }
+          );
 
 
-    const email =
-      document
-        .getElementById("loginEmail")
-        .value
-        .trim();
-
-    const password =
-      document
-        .getElementById("loginPassword")
-        .value;
+        if (rpc.error) {
+          throw rpc.error;
+        }
 
 
-    if (!email || !password) {
+        if (
+          !rpc.data ||
+          rpc.data.length === 0
+        ) {
 
-      showAuthMessage(
-        "შეიყვანე ელფოსტა და პაროლი.",
-        true
-      );
+          authMessage(
+            "ასეთი username ვერ მოიძებნა."
+          );
 
-      return;
-    }
-
-
-    showAuthMessage(
-      "შესვლა მიმდინარეობს..."
-    );
+          return;
+        }
 
 
-    try {
+        loginEmail =
+          rpc.data[0].email;
+      }
 
-      const {
-        data,
-        error
-      } =
+
+      const login =
         await supabaseClient.auth
           .signInWithPassword({
 
-            email: email,
+            email: loginEmail,
 
             password: password
 
           });
 
 
-      if (error) {
-        throw error;
+      if (login.error) {
+        throw login.error;
       }
 
 
-      currentUser = data.user;
-
-      await showApp();
-
-    } catch (error) {
+    }
+    catch (error) {
 
       console.error(error);
 
-      showAuthMessage(
-        "შესვლა ვერ შესრულდა:\n\n" +
-        getErrorMessage(error),
-        true
+      authMessage(
+        error.message ||
+        "შეცდომა მოხდა."
       );
 
     }
 
   }
+);
 
 
-  /*
-    =====================================================
-    LOGOUT
-    =====================================================
-  */
+/* =========================================================
+   LOAD USER PROFILE
+========================================================= */
 
-  async function logout() {
+async function loadProfile() {
 
-    if (!supabaseClient) return;
+  const result =
+    await supabaseClient.auth.getUser();
 
+
+  currentUser =
+    result.data.user;
+
+
+  if (!currentUser) {
+    return false;
+  }
+
+
+  let profileResult =
+    await supabaseClient
+      .from("profiles")
+      .select(
+        "id,username"
+      )
+      .eq(
+        "id",
+        currentUser.id
+      )
+      .maybeSingle();
+
+
+  let profile =
+    profileResult.data;
+
+
+  if (
+    !profile &&
+    currentUser.user_metadata &&
+    currentUser.user_metadata.username
+  ) {
+
+    const createProfile =
+      await supabaseClient
+        .from("profiles")
+        .upsert(
+          {
+            id: currentUser.id,
+
+            username:
+              currentUser
+                .user_metadata
+                .username
+          },
+          {
+            onConflict: "id"
+          }
+        )
+        .select(
+          "id,username"
+        )
+        .single();
+
+
+    if (!createProfile.error) {
+
+      profile =
+        createProfile.data;
+    }
+
+  }
+
+
+  currentProfile =
+    profile || {
+      id: currentUser.id,
+      username:
+        currentUser.email
+    };
+
+
+  $("userLabel").textContent =
+    "შესული ხარ: " +
+    currentProfile.username;
+
+
+  return true;
+}
+
+
+/* =========================================================
+   BOOT
+========================================================= */
+
+async function boot() {
+
+  if (
+    SUPABASE_ANON_KEY.includes(
+      "აქ_ჩასვი"
+    )
+  ) {
+
+    authMessage(
+      "ჯერ ჩასვი Supabase Publishable key index.html-ში."
+    );
+
+    return;
+  }
+
+
+  const loggedIn =
+    await loadProfile();
+
+
+  if (!loggedIn) {
+
+    $("authScreen")
+      .classList
+      .remove("hidden");
+
+    return;
+  }
+
+
+  $("authScreen")
+    .classList
+    .add("hidden");
+
+
+  await loadConversations();
+
+  await loadFiles();
+
+  subscribeRealtime();
+
+}
+
+
+boot();
+
+
+/* =========================================================
+   AUTH STATE
+========================================================= */
+
+supabaseClient.auth.onAuthStateChange(
+  async function(event) {
+
+    if (event === "SIGNED_IN") {
+
+      await loadProfile();
+
+      $("authScreen")
+        .classList
+        .add("hidden");
+
+      await loadConversations();
+
+      await loadFiles();
+
+      subscribeRealtime();
+
+    }
+
+
+    if (event === "SIGNED_OUT") {
+
+      currentUser = null;
+
+      currentProfile = null;
+
+      currentChatUser = null;
+
+      conversations.clear();
+
+
+      $("authScreen")
+        .classList
+        .remove("hidden");
+
+
+      $("chatArea")
+        .classList
+        .add("hidden");
+
+
+      $("emptyChat")
+        .classList
+        .remove("hidden");
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+$("logoutButton").onclick =
+  async function() {
 
     await supabaseClient.auth.signOut();
 
-    currentUser = null;
+  };
 
-    document
-      .getElementById("appSection")
-      .classList.add("hidden");
 
-    document
-      .getElementById("authSection")
-      .classList.remove("hidden");
+/* =========================================================
+   USER SEARCH
+========================================================= */
 
-    showLogin();
+async function searchUsers() {
 
+  const username =
+    $("userSearchInput")
+      .value
+      .trim();
+
+
+  $("searchResults").innerHTML =
+    "";
+
+
+  if (!username) {
+
+    searchMessage(
+      "ჩაწერე username."
+    );
+
+    return;
   }
 
 
-  /*
-    =====================================================
-    SHOW APP
-    =====================================================
-  */
-
-  async function showApp() {
-
-    document
-      .getElementById("authSection")
-      .classList.add("hidden");
-
-    document
-      .getElementById("appSection")
-      .classList.remove("hidden");
+  searchMessage(
+    "ვეძებ..."
+  );
 
 
-    await loadProfile();
+  const result =
+    await supabaseClient.rpc(
+      "find_profile_by_username",
+      {
+        search_username:
+          username
+      }
+    );
 
-    await loadFiles();
 
+  if (result.error) {
+
+    console.error(result.error);
+
+    searchMessage(
+      "ძებნა ვერ შესრულდა."
+    );
+
+    return;
   }
 
 
-  /*
-    =====================================================
-    PROFILE
-    =====================================================
-  */
+  if (
+    !result.data ||
+    result.data.length === 0
+  ) {
 
-  async function loadProfile() {
+    searchMessage(
+      "მომხმარებელი ვერ მოიძებნა."
+    );
 
-    if (!currentUser) return;
-
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("profiles")
-        .select("username")
-        .eq("id", currentUser.id)
-        .maybeSingle();
-
-
-    if (error) {
-
-      console.error(error);
-
-      document
-        .getElementById("currentUsername")
-        .textContent =
-        currentUser.email;
-
-      return;
-    }
-
-
-    if (data) {
-
-      document
-        .getElementById("currentUsername")
-        .textContent =
-        data.username;
-
-    } else {
-
-      document
-        .getElementById("currentUsername")
-        .textContent =
-        currentUser.email;
-
-    }
-
+    return;
   }
 
 
-  /*
-    =====================================================
-    FILE UPLOAD
-    =====================================================
-  */
-
-  const uploadArea =
-    document.getElementById("uploadArea");
-
-  const fileInput =
-    document.getElementById("fileInput");
-
-
-  uploadArea.addEventListener(
-    "click",
-    () => {
-
-      fileInput.click();
-
-    }
+  searchMessage(
+    "მომხმარებელი მოიძებნა."
   );
 
 
-  fileInput.addEventListener(
-    "change",
-    async (event) => {
-
-      const files =
-        Array.from(event.target.files);
-
-      await uploadFiles(files);
-
-      fileInput.value = "";
-
-    }
-  );
-
-
-  uploadArea.addEventListener(
-    "dragover",
-    (event) => {
-
-      event.preventDefault();
-
-      uploadArea.classList.add("dragover");
-
-    }
-  );
-
-
-  uploadArea.addEventListener(
-    "dragleave",
-    () => {
-
-      uploadArea.classList.remove("dragover");
-
-    }
-  );
-
-
-  uploadArea.addEventListener(
-    "drop",
-    async (event) => {
-
-      event.preventDefault();
-
-      uploadArea.classList.remove("dragover");
-
-      const files =
-        Array.from(event.dataTransfer.files);
-
-      await uploadFiles(files);
-
-    }
-  );
-
-
-  async function uploadFiles(files) {
-
-    if (!currentUser) {
-
-      showUploadMessage(
-        "ჯერ უნდა შეხვიდე ანგარიშში.",
-        true
-      );
-
-      return;
-    }
-
-
-    if (!files.length) return;
-
-
-    const MAX_SIZE =
-      50 * 1024 * 1024;
-
-
-    for (const file of files) {
-
-      if (file.size > MAX_SIZE) {
-
-        showUploadMessage(
-          `"${file.name}" ძალიან დიდია.\n` +
-          "მაქსიმალური ზომაა 50 MB.",
-          true
-        );
-
-        continue;
-      }
-
-
-      try {
-
-        showUploadMessage(
-          `იტვირთება: ${file.name}`
-        );
-
-
-        const fileId =
-          crypto.randomUUID();
-
-
-        const safeName =
-          file.name
-            .replace(/[^\w.\-ა-ჰ ]/g, "_");
-
-
-        /*
-          ფაილი ინახება მომხმარებლის
-          საკუთარი ID-ის საქაღალდეში.
-        */
-
-        const storagePath =
-          `${currentUser.id}/${fileId}-${safeName}`;
-
-
-        /*
-          3 დღე
-        */
-
-        const expiresAt =
-          new Date(
-            Date.now() +
-            3 * 24 * 60 * 60 * 1000
-          ).toISOString();
-
-
-        const {
-          error: uploadError
-        } =
-          await supabaseClient.storage
-            .from("user-files")
-            .upload(
-              storagePath,
-              file,
-              {
-                upsert: false,
-                contentType:
-                  file.type ||
-                  "application/octet-stream"
-              }
-            );
-
-
-        if (uploadError) {
-          throw uploadError;
-        }
-
-
-        /*
-          Database-ში ვინახავთ
-          ფაილის ინფორმაციას.
-        */
-
-        const {
-          error: dbError
-        } =
-          await supabaseClient
-            .from("files")
-            .insert({
-
-              id: fileId,
-
-              user_id:
-                currentUser.id,
-
-              file_name:
-                file.name,
-
-              storage_path:
-                storagePath,
-
-              file_type:
-                file.type,
-
-              file_size:
-                file.size,
-
-              expires_at:
-                expiresAt
-
-            });
-
-
-        if (dbError) {
-
-          /*
-            თუ Database ჩანაწერი ვერ შეიქმნა,
-            Storage-ში ატვირთული ფაილიც წავშალოთ.
-          */
-
-          await supabaseClient.storage
-            .from("user-files")
-            .remove([storagePath]);
-
-          throw dbError;
-        }
-
-
-        showUploadMessage(
-          `"${file.name}" წარმატებით აიტვირთა.`
-        );
-
-      } catch (error) {
-
-        console.error(error);
-
-        showUploadMessage(
-          `"${file.name}" ვერ აიტვირთა:\n\n` +
-          getErrorMessage(error),
-          true
-        );
-
-      }
-
-    }
-
-
-    await loadFiles();
-
-  }
-
-
-  /*
-    =====================================================
-    LOAD FILES
-    =====================================================
-  */
-
-  async function loadFiles() {
-
-    if (!currentUser) return;
-
-
-    const list =
-      document.getElementById("fileList");
-
-
-    list.innerHTML =
-      '<div class="loading">იტვირთება...</div>';
-
-
-    try {
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .from("files")
-          .select("*")
-          .eq("user_id", currentUser.id)
-          .order(
-            "created_at",
-            {
-              ascending: false
-            }
-          );
-
-
-      if (error) {
-        throw error;
-      }
-
-
-      /*
-        ძველი/ვადაგასული ჩანაწერები
-        მომხმარებელს აღარ ვაჩვენოთ.
-      */
-
-      const now =
-        new Date();
-
-
-      const activeFiles =
-        (data || []).filter(
-          file =>
-            new Date(file.expires_at) > now
-        );
-
-
-      if (!activeFiles.length) {
-
-        list.innerHTML =
-          '<div class="empty">' +
-          'ჯერ ფაილები არ აგიტვირთავს.' +
-          '</div>';
-
-        return;
-      }
-
-
-      list.innerHTML = "";
-
-
-      for (const file of activeFiles) {
+  result.data
+    .filter(
+      profile =>
+        profile.id !==
+        currentUser.id
+    )
+    .forEach(
+      function(profile) {
 
         const item =
           document.createElement("div");
 
+
         item.className =
-          "file-item";
+          "search-result";
 
 
-        const created =
-          new Date(
-            file.created_at
-          ).toLocaleString("ka-GE");
+        item.innerHTML =
+
+          "<div class='username'>" +
+          "@" +
+          escapeHtml(
+            profile.username
+          ) +
+          "</div>" +
+
+          "<div class='muted'>" +
+          "პირადი ჩატის დაწყება" +
+          "</div>";
 
 
-        const expires =
-          new Date(
-            file.expires_at
-          ).toLocaleString("ka-GE");
+        item.onclick =
+          function() {
+
+            openChat(profile);
+
+          };
 
 
-        item.innerHTML = `
+        $("searchResults")
+          .appendChild(item);
 
-          <div class="file-info">
+      }
+    );
 
-            <div>
-
-              <div class="file-name">
-                ${escapeHtml(file.file_name)}
-              </div>
-
-              <div class="file-meta">
-                ზომა: ${formatBytes(file.file_size)}
-                <br>
-                ატვირთულია: ${created}
-                <br>
-                წაიშლება: ${expires}
-              </div>
-
-            </div>
-
-          </div>
-
-          <div class="file-actions">
-
-            <button
-              onclick="openFile('${file.id}')"
-            >
-              გახსნა
-            </button>
-
-            <button
-              class="danger"
-              onclick="deleteFile('${file.id}')"
-            >
-              წაშლა
-            </button>
-
-          </div>
-
-        `;
+}
 
 
-        list.appendChild(item);
+$("searchButton").onclick =
+  searchUsers;
+
+
+$("userSearchInput")
+  .addEventListener(
+    "keydown",
+    function(event) {
+
+      if (
+        event.key === "Enter"
+      ) {
+
+        event.preventDefault();
+
+        searchUsers();
 
       }
 
-    } catch (error) {
-
-      console.error(error);
-
-      list.innerHTML =
-        `<div class="message error">
-          ფაილების ჩატვირთვა ვერ მოხერხდა:
-          
-          ${escapeHtml(
-            getErrorMessage(error)
-          )}
-        </div>`;
-
     }
+  );
 
+
+/* =========================================================
+   LOAD CONVERSATIONS
+========================================================= */
+
+async function loadConversations() {
+
+  if (!currentUser) {
+    return;
   }
 
 
-  /*
-    =====================================================
-    OPEN FILE
-    =====================================================
-  */
-
-  async function openFile(fileId) {
-
-    try {
-
-      const {
-        data: file,
-        error
-      } =
-        await supabaseClient
-          .from("files")
-          .select("*")
-          .eq("id", fileId)
-          .eq("user_id", currentUser.id)
-          .single();
-
-
-      if (error) {
-        throw error;
-      }
+  const result =
+    await supabaseClient
+      .from("messages")
+      .select(
+        "sender_id,receiver_id,message,created_at"
+      )
+      .or(
+        "sender_id.eq." +
+        currentUser.id +
+        ",receiver_id.eq." +
+        currentUser.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(300);
 
 
-      /*
-        მხოლოდ 1 საათით მოქმედი
-        Signed URL.
-      */
+  if (result.error) {
 
-      const {
-        data: signedData,
-        error: signedError
-      } =
-        await supabaseClient.storage
-          .from("user-files")
-          .createSignedUrl(
-            file.storage_path,
-            60 * 60
-          );
+    console.error(
+      result.error
+    );
 
-
-      if (signedError) {
-        throw signedError;
-      }
-
-
-      window.open(
-        signedData.signedUrl,
-        "_blank"
-      );
-
-    } catch (error) {
-
-      alert(
-        "ფაილის გახსნა ვერ მოხერხდა:\n\n" +
-        getErrorMessage(error)
-      );
-
-    }
-
+    return;
   }
 
 
-  /*
-    =====================================================
-    DELETE FILE
-    =====================================================
-  */
-
-  async function deleteFile(fileId) {
-
-    if (!currentUser) return;
+  conversations.clear();
 
 
-    const confirmed =
-      confirm(
-        "ნამდვილად გინდა ამ ფაილის წაშლა?"
-      );
+  const userIds =
+    new Set();
 
 
-    if (!confirmed) return;
+  for (
+    const message
+    of result.data || []
+  ) {
+
+    const otherId =
+      message.sender_id ===
+      currentUser.id
+
+        ? message.receiver_id
+
+        : message.sender_id;
 
 
-    try {
+    if (!userIds.has(otherId)) {
 
-      const {
-        data: file,
-        error
-      } =
-        await supabaseClient
-          .from("files")
-          .select("*")
-          .eq("id", fileId)
-          .eq("user_id", currentUser.id)
-          .single();
+      userIds.add(otherId);
 
-
-      if (error) {
-        throw error;
-      }
-
-
-      /*
-        ჯერ Storage-დან ვშლით.
-      */
-
-      const {
-        error: storageError
-      } =
-        await supabaseClient.storage
-          .from("user-files")
-          .remove([
-            file.storage_path
-          ]);
-
-
-      if (storageError) {
-
-        console.warn(
-          "Storage delete warning:",
-          storageError
-        );
-
-      }
-
-
-      /*
-        შემდეგ Database-დან.
-      */
-
-      const {
-        error: dbError
-      } =
-        await supabaseClient
-          .from("files")
-          .delete()
-          .eq("id", fileId)
-          .eq("user_id", currentUser.id);
-
-
-      if (dbError) {
-        throw dbError;
-      }
-
-
-      await loadFiles();
-
-    } catch (error) {
-
-      alert(
-        "ფაილის წაშლა ვერ მოხერხდა:\n\n" +
-        getErrorMessage(error)
-      );
-
-    }
-
-  }
-
-
-  /*
-    =====================================================
-    SESSION CHECK
-    =====================================================
-  */
-
-  async function checkSession() {
-
-    if (!supabaseClient) return;
-
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth
-        .getSession();
-
-
-    if (error) {
-
-      console.error(error);
-
-      return;
-    }
-
-
-    if (data.session) {
-
-      currentUser =
-        data.session.user;
-
-      await showApp();
-
-    }
-
-  }
-
-
-  /*
-    =====================================================
-    AUTH STATE LISTENER
-    =====================================================
-  */
-
-  if (supabaseClient) {
-
-    supabaseClient.auth
-      .onAuthStateChange(
-        async (event, session) => {
-
-          if (session) {
-
-            currentUser =
-              session.user;
-
-          }
-
+      conversations.set(
+        otherId,
+        {
+          id: otherId,
+          last: message
         }
       );
 
-  }
-
-
-  /*
-    =====================================================
-    HELPERS
-    =====================================================
-  */
-
-  function getErrorMessage(error) {
-
-    if (!error) {
-      return "უცნობი შეცდომა.";
     }
-
-
-    if (error.message) {
-      return error.message;
-    }
-
-
-    return String(error);
 
   }
 
 
-  function formatBytes(bytes) {
+  if (userIds.size > 0) {
 
-    if (!bytes) {
-      return "0 B";
+    const profiles =
+      await supabaseClient
+        .from("profiles")
+        .select(
+          "id,username"
+        )
+        .in(
+          "id",
+          [...userIds]
+        );
+
+
+    for (
+      const profile
+      of profiles.data || []
+    ) {
+
+      if (
+        conversations.has(
+          profile.id
+        )
+      ) {
+
+        conversations.get(
+          profile.id
+        ).profile =
+          profile;
+
+      }
+
+    }
+
+  }
+
+
+  renderConversations();
+
+}
+
+
+/* =========================================================
+   RENDER CONVERSATIONS
+========================================================= */
+
+function renderConversations() {
+
+  const box =
+    $("conversationList");
+
+
+  box.innerHTML =
+    "";
+
+
+  if (
+    conversations.size === 0
+  ) {
+
+    box.innerHTML =
+      "<div class='muted'>" +
+      "ჯერ ჩატები არ გაქვს." +
+      "</div>";
+
+    return;
+  }
+
+
+  for (
+    const item
+    of conversations.values()
+  ) {
+
+    if (!item.profile) {
+      continue;
     }
 
 
-    const units =
-      [
-        "B",
-        "KB",
-        "MB",
-        "GB"
-      ];
-
-
-    const index =
-      Math.floor(
-        Math.log(bytes) /
-        Math.log(1024)
+    const element =
+      document.createElement(
+        "div"
       );
 
 
-    return (
-      (bytes /
-        Math.pow(
-          1024,
-          index
-        )
-      ).toFixed(1)
-      + " "
-      + units[index]
+    element.className =
+      "conversation";
+
+
+    if (
+      currentChatUser &&
+      currentChatUser.id ===
+      item.profile.id
+    ) {
+
+      element.classList.add(
+        "active"
+      );
+
+    }
+
+
+    const preview =
+      item.last &&
+      item.last.message
+
+        ? item.last.message
+            .slice(0, 40)
+
+        : "";
+
+
+    element.innerHTML =
+
+      "<div class='username'>" +
+      "@" +
+      escapeHtml(
+        item.profile.username
+      ) +
+      "</div>" +
+
+      "<div class='muted'>" +
+      escapeHtml(
+        preview
+      ) +
+      " • " +
+      formatDate(
+        item.last.created_at
+      ) +
+      "</div>";
+
+
+    element.onclick =
+      function() {
+
+        openChat(
+          item.profile
+        );
+
+      };
+
+
+    box.appendChild(
+      element
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   OPEN CHAT
+========================================================= */
+
+async function openChat(profile) {
+
+  if (
+    !profile ||
+    profile.id === currentUser.id
+  ) {
+
+    return;
+  }
+
+
+  currentChatUser =
+    profile;
+
+
+  $("chatUsername")
+    .textContent =
+      "@" +
+      profile.username;
+
+
+  $("emptyChat")
+    .classList
+    .add("hidden");
+
+
+  $("chatArea")
+    .classList
+    .remove("hidden");
+
+
+  $("sidebar")
+    .classList
+    .remove("mobile-open");
+
+
+  renderConversations();
+
+
+  $("messages").innerHTML =
+    "<div class='muted' style='text-align:center'>" +
+    "იტვირთება..." +
+    "</div>";
+
+
+  const result =
+    await supabaseClient
+      .from("messages")
+      .select(
+        "id,sender_id,receiver_id,message,created_at"
+      )
+      .or(
+        "and(sender_id.eq." +
+        currentUser.id +
+        ",receiver_id.eq." +
+        profile.id +
+        "),and(sender_id.eq." +
+        profile.id +
+        ",receiver_id.eq." +
+        currentUser.id +
+        ")"
+      )
+      .order(
+        "created_at",
+        {
+          ascending: true
+        }
+      )
+      .limit(500);
+
+
+  if (result.error) {
+
+    console.error(
+      result.error
+    );
+
+
+    $("messages").innerHTML =
+      "<div class='muted' style='text-align:center'>" +
+      "შეტყობინებების ჩატვირთვა ვერ მოხერხდა." +
+      "</div>";
+
+
+    return;
+  }
+
+
+  $("messages").innerHTML =
+    "";
+
+
+  for (
+    const message
+    of result.data || []
+  ) {
+
+    renderMessage(
+      message
     );
 
   }
 
 
-  function escapeHtml(text) {
+  scrollMessages();
 
-    return String(text)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   RENDER MESSAGE
+========================================================= */
+
+function renderMessage(message) {
+
+  const element =
+    document.createElement(
+      "div"
+    );
+
+
+  element.className =
+    "message";
+
+
+  if (
+    message.sender_id ===
+    currentUser.id
+  ) {
+
+    element.classList.add(
+      "mine"
+    );
 
   }
 
 
-  /*
-    =====================================================
-    START
-    =====================================================
-  */
+  element.dataset.id =
+    message.id;
 
-  checkSession();
+
+  const text =
+    document.createElement(
+      "div"
+    );
+
+
+  text.className =
+    "message-text";
+
+
+  text.textContent =
+    message.message;
+
+
+  const time =
+    document.createElement(
+      "div"
+    );
+
+
+  time.className =
+    "message-time";
+
+
+  time.textContent =
+    formatDate(
+      message.created_at
+    );
+
+
+  element.appendChild(
+    text
+  );
+
+
+  element.appendChild(
+    time
+  );
+
+
+  $("messages")
+    .appendChild(
+      element
+    );
+
+}
+
+
+/* =========================================================
+   SCROLL CHAT
+========================================================= */
+
+function scrollMessages() {
+
+  $("messages").scrollTop =
+    $("messages").scrollHeight;
+
+}
+
+
+/* =========================================================
+   SEND MESSAGE
+========================================================= */
+
+$("messageForm")
+  .addEventListener(
+    "submit",
+    async function(event) {
+
+      event.preventDefault();
+
+
+      if (!currentChatUser) {
+        return;
+      }
+
+
+      const text =
+        $("messageInput")
+          .value
+          .trim();
+
+
+      if (!text) {
+        return;
+      }
+
+
+      $("messageInput")
+        .disabled = true;
+
+
+      const result =
+        await supabaseClient
+          .from("messages")
+          .insert({
+
+            sender_id:
+              currentUser.id,
+
+            receiver_id:
+              currentChatUser.id,
+
+            message:
+              text
+
+          })
+          .select(
+            "id,sender_id,receiver_id,message,created_at"
+          )
+          .single();
+
+
+      $("messageInput")
+        .disabled = false;
+
+
+      if (result.error) {
+
+        alert(
+          "შეტყობინება ვერ გაიგზავნა: " +
+          result.error.message
+        );
+
+        return;
+      }
+
+
+      if (
+        !$("messages")
+          .querySelector(
+            "[data-id='" +
+            result.data.id +
+            "']"
+          )
+      ) {
+
+        renderMessage(
+          result.data
+        );
+
+      }
+
+
+      $("messageInput")
+        .value = "";
+
+
+      scrollMessages();
+
+
+      await loadConversations();
+
+    }
+  );
+
+
+/* =========================================================
+   REALTIME CHAT
+========================================================= */
+
+function subscribeRealtime() {
+
+  realtimeChannels.forEach(
+    function(channel) {
+
+      supabaseClient
+        .removeChannel(
+          channel
+        );
+
+    }
+  );
+
+
+  realtimeChannels =
+    [];
+
+
+  if (!currentUser) {
+    return;
+  }
+
+
+  /* INCOMING */
+
+  const incoming =
+    supabaseClient
+      .channel(
+        "incoming-" +
+        currentUser.id
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter:
+            "receiver_id=eq." +
+            currentUser.id
+        },
+        function(payload) {
+
+          const message =
+            payload.new;
+
+
+          if (
+            currentChatUser &&
+            message.sender_id ===
+            currentChatUser.id
+          ) {
+
+            if (
+              !$("messages")
+                .querySelector(
+                  "[data-id='" +
+                  message.id +
+                  "']"
+                )
+            ) {
+
+              renderMessage(
+                message
+              );
+
+              scrollMessages();
+
+            }
+
+          }
+
+
+          loadConversations();
+
+        }
+      )
+      .subscribe();
+
+
+  /* OUTGOING */
+
+  const outgoing =
+    supabaseClient
+      .channel(
+        "outgoing-" +
+        currentUser.id
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter:
+            "sender_id=eq." +
+            currentUser.id
+        },
+        function(payload) {
+
+          const message =
+            payload.new;
+
+
+          if (
+            currentChatUser &&
+            message.receiver_id ===
+            currentChatUser.id
+          ) {
+
+            if (
+              !$("messages")
+                .querySelector(
+                  "[data-id='" +
+                  message.id +
+                  "']"
+                )
+            ) {
+
+              renderMessage(
+                message
+              );
+
+              scrollMessages();
+
+            }
+
+          }
+
+
+          loadConversations();
+
+        }
+      )
+      .subscribe();
+
+
+  realtimeChannels.push(
+    incoming,
+    outgoing
+  );
+
+}
+
+
+/* =========================================================
+   LOAD FILES
+========================================================= */
+
+async function loadFiles() {
+
+  const result =
+    await supabaseClient
+      .from("files")
+      .select(
+        "id,file_name,storage_path,file_type,file_size,created_at,expires_at"
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (result.error) {
+
+    console.error(
+      result.error
+    );
+
+    return;
+  }
+
+
+  const box =
+    $("fileList");
+
+
+  box.innerHTML =
+    "";
+
+
+  if (
+    !result.data ||
+    result.data.length === 0
+  ) {
+
+    box.innerHTML =
+      "<div class='muted'>" +
+      "ატვირთული ფაილები ჯერ არ არის." +
+      "</div>";
+
+    return;
+  }
+
+
+  for (
+    const file
+    of result.data
+  ) {
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+
+    row.className =
+      "file-item";
+
+
+    const info =
+      document.createElement(
+        "div"
+      );
+
+
+    info.className =
+      "file-info";
+
+
+    info.innerHTML =
+
+      "<div class='file-name' title='" +
+      escapeHtml(
+        file.file_name
+      ) +
+      "'>" +
+
+      escapeHtml(
+        file.file_name
+      ) +
+
+      "</div>" +
+
+      "<div class='muted'>" +
+
+      formatBytes(
+        file.file_size
+      ) +
+
+      " • ატვირთულია " +
+
+      formatDate(
+        file.created_at
+      ) +
+
+      " • იშლება " +
+
+      formatDate(
+        file.expires_at
+      ) +
+
+      "</div>";
+
+
+    const actions =
+      document.createElement(
+        "div"
+      );
+
+
+    actions.className =
+      "file-actions";
+
+
+    const openButton =
+      document.createElement(
+        "button"
+      );
+
+
+    openButton.className =
+      "file-button";
+
+
+    openButton.textContent =
+      "გახსნა";
+
+
+    openButton.onclick =
+      async function() {
+
+        const signed =
+          await supabaseClient
+            .storage
+            .from("user-files")
+            .createSignedUrl(
+              file.storage_path,
+              3600
+            );
+
+
+        if (signed.error) {
+
+          alert(
+            "ფაილის გახსნა ვერ მოხერხდა."
+          );
+
+          return;
+        }
+
+
+        window.open(
+          signed.data.signedUrl,
+          "_blank",
+          "noopener"
+        );
+
+      };
+
+
+    const deleteButton =
+      document.createElement(
+        "button"
+      );
+
+
+    deleteButton.className =
+      "file-button delete-button";
+
+
+    deleteButton.textContent =
+      "წაშლა";
+
+
+    deleteButton.onclick =
+      function() {
+
+        deleteFile(
+          file
+        );
+
+      };
+
+
+    actions.appendChild(
+      openButton
+    );
+
+
+    actions.appendChild(
+      deleteButton
+    );
+
+
+    row.appendChild(
+      info
+    );
+
+
+    row.appendChild(
+      actions
+    );
+
+
+    box.appendChild(
+      row
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   UPLOAD FILE
+========================================================= */
+
+async function uploadFile(file) {
+
+  if (!file) {
+    return;
+  }
+
+
+  const maxSize =
+    50 * 1024 * 1024;
+
+
+  if (file.size > maxSize) {
+
+    uploadMessage(
+      "ფაილი 50 MB-ზე მეტი არ უნდა იყოს."
+    );
+
+    return;
+  }
+
+
+  uploadMessage(
+    "იტვირთება: " +
+    file.name
+  );
+
+
+  const fileId =
+    crypto.randomUUID();
+
+
+  const safeName =
+    file.name.replace(
+      /[^a-zA-Z0-9._-]/g,
+      "_"
+    );
+
+
+  const storagePath =
+    currentUser.id +
+    "/" +
+    fileId +
+    "-" +
+    safeName;
+
+
+  const expiresAt =
+    new Date(
+      Date.now() +
+      3 * 24 * 60 * 60 * 1000
+    ).toISOString();
+
+
+  /* STORAGE */
+
+  const upload =
+    await supabaseClient
+      .storage
+      .from("user-files")
+      .upload(
+        storagePath,
+        file,
+        {
+          upsert: false
+        }
+      );
+
+
+  if (upload.error) {
+
+    uploadMessage(
+      "ატვირთვა ვერ მოხერხდა: " +
+      upload.error.message
+    );
+
+    return;
+  }
+
+
+  /* DATABASE */
+
+  const database =
+    await supabaseClient
+      .from("files")
+      .insert({
+
+        id:
+          fileId,
+
+        user_id:
+          currentUser.id,
+
+        file_name:
+          file.name,
+
+        storage_path:
+          storagePath,
+
+        file_type:
+          file.type || null,
+
+        file_size:
+          file.size,
+
+        expires_at:
+          expiresAt
+
+      });
+
+
+  if (database.error) {
+
+    console.error(
+      database.error
+    );
+
+
+    await supabaseClient
+      .storage
+      .from("user-files")
+      .remove([
+        storagePath
+      ]);
+
+
+    uploadMessage(
+      "ფაილის ბაზაში დამატება ვერ მოხერხდა."
+    );
+
+    return;
+  }
+
+
+  uploadMessage(
+    "ატვირთულია ✓"
+  );
+
+
+  $("fileInput").value =
+    "";
+
+
+  await loadFiles();
+
+}
+
+
+/* =========================================================
+   FILE DELETE
+========================================================= */
+
+async function deleteFile(file) {
+
+  const confirmed =
+    confirm(
+      'წავშალოთ "' +
+      file.file_name +
+      '"?'
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  const storage =
+    await supabaseClient
+      .storage
+      .from("user-files")
+      .remove([
+        file.storage_path
+      ]);
+
+
+  if (storage.error) {
+
+    console.error(
+      storage.error
+    );
+
+  }
+
+
+  const database =
+    await supabaseClient
+      .from("files")
+      .delete()
+      .eq(
+        "id",
+        file.id
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      );
+
+
+  if (database.error) {
+
+    alert(
+      "წაშლა ვერ მოხერხდა: " +
+      database.error.message
+    );
+
+    return;
+  }
+
+
+  await loadFiles();
+
+}
+
+
+/* =========================================================
+   FILE PICKER
+========================================================= */
+
+$("dropZone").onclick =
+  function() {
+
+    $("fileInput").click();
+
+  };
+
+
+$("fileInput").onchange =
+  function(event) {
+
+    uploadFile(
+      event.target.files[0]
+    );
+
+  };
+
+
+/* =========================================================
+   DRAG & DROP
+========================================================= */
+
+$("dropZone").ondragover =
+  function(event) {
+
+    event.preventDefault();
+
+    $("dropZone")
+      .classList
+      .add("dragging");
+
+  };
+
+
+$("dropZone").ondragleave =
+  function() {
+
+    $("dropZone")
+      .classList
+      .remove("dragging");
+
+  };
+
+
+$("dropZone").ondrop =
+  function(event) {
+
+    event.preventDefault();
+
+    $("dropZone")
+      .classList
+      .remove("dragging");
+
+
+    uploadFile(
+      event.dataTransfer.files[0]
+    );
+
+  };
+
+
+/* =========================================================
+   MOBILE SIDEBAR
+========================================================= */
+
+$("mobileUsersButton").onclick =
+  function() {
+
+    $("sidebar")
+      .classList
+      .toggle("mobile-open");
+
+  };
+
+
+/* =========================================================
+   MOBILE BACK
+========================================================= */
+
+$("backButton").onclick =
+  function() {
+
+    $("chatArea")
+      .classList
+      .add("hidden");
+
+
+    $("emptyChat")
+      .classList
+      .remove("hidden");
+
+
+    $("sidebar")
+      .classList
+      .add("mobile-open");
+
+
+    currentChatUser =
+      null;
+
+
+    renderConversations();
+
+  };
 
 </script>
 
