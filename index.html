@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ka">
 <head>
 <meta charset="UTF-8">
@@ -81,6 +82,11 @@ button {
 
 button:hover {
   opacity: .9;
+}
+
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
 }
 
 .success-btn {
@@ -310,345 +316,318 @@ button:hover {
   .bubble {
     max-width: 85%;
   }
+
 }
 
 </style>
+
 </head>
 
 <body>
 
 <div class="container">
 
-  <!-- =====================================================
-       AUTH
-  ====================================================== -->
-
   <div id="authScreen" class="card">
 
-    <h1>👥 Friends</h1>
+```
+<h1>👥 Friends</h1>
 
-    <div class="auth-tabs">
-      <button id="loginTab" class="active">
-        შესვლა
+<div class="auth-tabs">
+
+  <button id="loginTab" class="active">
+    შესვლა
+  </button>
+
+  <button id="registerTab">
+    რეგისტრაცია
+  </button>
+
+</div>
+
+
+<div id="loginBox">
+
+  <input
+    id="loginUsername"
+    type="text"
+    placeholder="Username"
+    autocomplete="username"
+  >
+
+  <input
+    id="loginPassword"
+    type="password"
+    placeholder="პაროლი"
+    autocomplete="current-password"
+  >
+
+  <button id="loginBtn">
+    შესვლა
+  </button>
+
+  <button
+    id="forgotBtn"
+    class="secondary-btn"
+  >
+    პაროლი დამავიწყდა
+  </button>
+
+  <div id="loginMessage"></div>
+
+</div>
+
+
+<div id="registerBox" class="hidden">
+
+  <input
+    id="registerUsername"
+    type="text"
+    placeholder="მომხმარებლის სახელი"
+    autocomplete="username"
+  >
+
+  <input
+    id="registerEmail"
+    type="email"
+    placeholder="ელფოსტა"
+    autocomplete="email"
+  >
+
+  <input
+    id="registerPassword"
+    type="password"
+    placeholder="პაროლი"
+    autocomplete="new-password"
+  >
+
+  <input
+    id="registerPassword2"
+    type="password"
+    placeholder="გაიმეორე პაროლი"
+    autocomplete="new-password"
+  >
+
+  <button
+    id="registerBtn"
+    class="success-btn"
+  >
+    რეგისტრაცია
+  </button>
+
+  <div id="registerMessage"></div>
+
+</div>
+
+
+<div id="forgotBox" class="hidden">
+
+  <h3>🔑 პაროლის აღდგენა</h3>
+
+  <input
+    id="forgotUsername"
+    type="text"
+    placeholder="Username"
+  >
+
+  <button id="sendResetBtn">
+    აღდგენის ბმულის გაგზავნა
+  </button>
+
+  <button
+    id="backLoginBtn"
+    class="secondary-btn"
+  >
+    უკან
+  </button>
+
+  <div id="forgotMessage"></div>
+
+</div>
+
+
+<div id="recoveryBox" class="hidden">
+
+  <h3>🔐 ახალი პაროლი</h3>
+
+  <input
+    id="newPassword"
+    type="password"
+    placeholder="ახალი პაროლი"
+  >
+
+  <input
+    id="newPassword2"
+    type="password"
+    placeholder="გაიმეორე ახალი პაროლი"
+  >
+
+  <button id="changePasswordBtn">
+    პაროლის შეცვლა
+  </button>
+
+  <div id="recoveryMessage"></div>
+
+</div>
+```
+
+  </div>
+
+  <div id="appScreen" class="hidden">
+
+```
+<div class="card topbar">
+
+  <div>
+    👤
+    <span id="currentUsername" class="username"></span>
+  </div>
+
+  <button
+    id="logoutBtn"
+    class="danger-btn"
+  >
+    გასვლა
+  </button>
+
+</div>
+
+
+<div class="app-grid">
+
+
+  <div class="sidebar">
+
+
+    <div class="card">
+
+      <h3>🔎 მომხმარებლის ძებნა</h3>
+
+      <input
+        id="searchUsername"
+        type="text"
+        placeholder="მაგ: suj"
+      >
+
+      <button id="searchBtn">
+        ძებნა
       </button>
 
-      <button id="registerTab">
-        რეგისტრაცია
-      </button>
+      <div id="searchResult"></div>
+
     </div>
 
-    <!-- LOGIN -->
 
-    <div id="loginBox">
+    <div class="card">
 
-      <input
-        id="loginUsername"
-        type="text"
-        placeholder="Username"
-        autocomplete="username"
-      >
+      <h3>
+        👥 მეგობრობის მოთხოვნები
+      </h3>
 
-      <input
-        id="loginPassword"
-        type="password"
-        placeholder="პაროლი"
-        autocomplete="current-password"
-      >
-
-      <button id="loginBtn">
-        შესვლა
-      </button>
-
-      <button
-        id="forgotBtn"
-        class="secondary-btn"
-      >
-        პაროლი დამავიწყდა
-      </button>
-
-      <div id="loginMessage"></div>
+      <div id="friendRequests">
+        <div class="small">
+          იტვირთება...
+        </div>
+      </div>
 
     </div>
 
 
-    <!-- REGISTER -->
+    <div class="card">
 
-    <div id="registerBox" class="hidden">
+      <h3>💬 ჩატები</h3>
 
-      <input
-        id="registerUsername"
-        type="text"
-        placeholder="მომხმარებლის სახელი"
-        autocomplete="username"
-      >
+      <div id="conversations">
+        <div class="small">
+          ჩატები არ არის.
+        </div>
+      </div>
 
-      <input
-        id="registerEmail"
-        type="email"
-        placeholder="ელფოსტა"
-        autocomplete="email"
-      >
+    </div>
 
-      <input
-        id="registerPassword"
-        type="password"
-        placeholder="პაროლი"
-        autocomplete="new-password"
-      >
+
+    <div class="card">
+
+      <h3>📁 ჩემი ფაილები</h3>
 
       <input
-        id="registerPassword2"
-        type="password"
-        placeholder="გაიმეორე პაროლი"
-        autocomplete="new-password"
+        id="fileInput"
+        type="file"
       >
 
       <button
-        id="registerBtn"
+        id="uploadBtn"
         class="success-btn"
       >
-        რეგისტრაცია
+        ატვირთვა
       </button>
 
-      <div id="registerMessage"></div>
+      <div
+        id="fileMessage"
+        class="small"
+      ></div>
 
-    </div>
-
-
-    <!-- FORGOT -->
-
-    <div id="forgotBox" class="hidden">
-
-      <h3>🔑 პაროლის აღდგენა</h3>
-
-      <input
-        id="forgotUsername"
-        type="text"
-        placeholder="Username"
-      >
-
-      <button id="sendResetBtn">
-        აღდგენის ბმულის გაგზავნა
-      </button>
-
-      <button
-        id="backLoginBtn"
-        class="secondary-btn"
-      >
-        უკან
-      </button>
-
-      <div id="forgotMessage"></div>
-
-    </div>
-
-
-    <!-- RECOVERY -->
-
-    <div id="recoveryBox" class="hidden">
-
-      <h3>🔐 ახალი პაროლი</h3>
-
-      <input
-        id="newPassword"
-        type="password"
-        placeholder="ახალი პაროლი"
-      >
-
-      <input
-        id="newPassword2"
-        type="password"
-        placeholder="გაიმეორე ახალი პაროლი"
-      >
-
-      <button id="changePasswordBtn">
-        პაროლის შეცვლა
-      </button>
-
-      <div id="recoveryMessage"></div>
+      <div id="filesList"></div>
 
     </div>
 
   </div>
 
 
-  <!-- =====================================================
-       APP
-  ====================================================== -->
+  <div class="chat-area">
 
-  <div id="appScreen" class="hidden">
+    <div class="card">
 
-    <div class="card topbar">
-
-      <div>
-        👤
-        <span id="currentUsername" class="username"></span>
+      <div
+        id="chatEmpty"
+        class="loading"
+      >
+        აირჩიე მომხმარებელი ჩატის დასაწყებად.
       </div>
 
-      <button
-        id="logoutBtn"
-        class="danger-btn"
+
+      <div
+        id="chatBox"
+        class="hidden"
       >
-        გასვლა
-      </button>
 
-    </div>
+        <div class="chat-header">
 
-
-    <div class="app-grid">
-
-      <!-- =================================================
-           SIDEBAR
-      ================================================== -->
-
-      <div class="sidebar">
-
-        <!-- SEARCH -->
-
-        <div class="card">
-
-          <h3>🔎 მომხმარებლის ძებნა</h3>
-
-          <input
-            id="searchUsername"
-            type="text"
-            placeholder="მაგ: suj"
-          >
-
-          <button id="searchBtn">
-            ძებნა
-          </button>
-
-          <div id="searchResult"></div>
-
-        </div>
-
-
-        <!-- REQUESTS -->
-
-        <div class="card">
-
-          <h3>
-            👥 მეგობრობის მოთხოვნები
-          </h3>
-
-          <div id="friendRequests">
-            <div class="small">
-              იტვირთება...
-            </div>
-          </div>
-
-        </div>
-
-
-        <!-- CONVERSATIONS -->
-
-        <div class="card">
-
-          <h3>💬 ჩატები</h3>
-
-          <div id="conversations">
-            <div class="small">
-              ჩატები არ არის.
-            </div>
-          </div>
-
-        </div>
-
-
-        <!-- FILES -->
-
-        <div class="card">
-
-          <h3>📁 ჩემი ფაილები</h3>
-
-          <input
-            id="fileInput"
-            type="file"
-          >
-
-          <button
-            id="uploadBtn"
-            class="success-btn"
-          >
-            ატვირთვა
-          </button>
+          <h2>
+            💬
+            <span id="chatUsername"></span>
+          </h2>
 
           <div
-            id="fileMessage"
+            id="chatStatus"
             class="small"
           ></div>
 
-          <div id="filesList"></div>
+        </div>
+
+
+        <div
+          id="messages"
+          class="messages"
+        ></div>
+
+
+        <div class="send-row">
+
+          <textarea
+            id="messageInput"
+            placeholder="დაწერე შეტყობინება..."
+          ></textarea>
+
+          <button id="sendMessageBtn">
+            გაგზავნა
+          </button>
 
         </div>
 
-      </div>
-
-
-      <!-- =================================================
-           CHAT
-      ================================================== -->
-
-      <div class="chat-area">
-
-        <div class="card">
-
-          <div
-            id="chatEmpty"
-            class="loading"
-          >
-            აირჩიე მომხმარებელი ჩატის დასაწყებად.
-          </div>
-
-
-          <div
-            id="chatBox"
-            class="hidden"
-          >
-
-            <div class="chat-header">
-
-              <h2>
-                💬
-                <span id="chatUsername"></span>
-              </h2>
-
-              <div
-                id="chatStatus"
-                class="small"
-              ></div>
-
-            </div>
-
-
-            <div
-              id="messages"
-              class="messages"
-            ></div>
-
-
-            <div class="send-row">
-
-              <textarea
-                id="messageInput"
-                placeholder="დაწერე შეტყობინება..."
-              ></textarea>
-
-              <button id="sendMessageBtn">
-                გაგზავნა
-              </button>
-
-            </div>
-
-            <div
-              id="messageStatus"
-              class="small"
-            ></div>
-
-          </div>
-
-        </div>
+        <div
+          id="messageStatus"
+          class="small"
+        ></div>
 
       </div>
 
@@ -657,7 +636,11 @@ button:hover {
   </div>
 
 </div>
+```
 
+  </div>
+
+</div>
 
 <script>
 
@@ -752,6 +735,16 @@ let isLoadingMessages = false;
 
 let lastMessageRenderKey = "";
 
+let lastConversationRenderKey = "";
+
+let lastFriendRequestRenderKey = "";
+
+let searchRequestId = 0;
+
+let appStarting = false;
+
+let appStarted = false;
+
 
 /* =========================================================
    AUTH UI
@@ -768,6 +761,9 @@ $("loginTab").addEventListener(
       .classList.add("hidden");
 
     $("forgotBox")
+      .classList.add("hidden");
+
+    $("recoveryBox")
       .classList.add("hidden");
 
     $("loginTab")
@@ -791,6 +787,9 @@ $("registerTab").addEventListener(
       .classList.remove("hidden");
 
     $("forgotBox")
+      .classList.add("hidden");
+
+    $("recoveryBox")
       .classList.add("hidden");
 
     $("registerTab")
@@ -964,34 +963,12 @@ async function register() {
     }
 
 
-    const {
-      error: profileError
-    } =
-      await supabaseClient
-        .from("profiles")
-        .insert({
-
-          id: data.user.id,
-
-          username: username
-
-        });
-
-
-    if (profileError) {
-
-      if (
-        profileError.code === "23505"
-      ) {
-
-        throw new Error(
-          "ეს username უკვე დაკავებულია."
-        );
-
-      }
-
-      throw profileError;
-    }
+    /*
+      IMPORTANT:
+      profiles-ს ახლა ავტომატურად ქმნის
+      Supabase-ის database trigger.
+      ამიტომ აქ ხელით INSERT აღარ კეთდება.
+    */
 
 
     showMessage(
@@ -1021,9 +998,25 @@ async function register() {
 
     console.error(error);
 
+    let message =
+      error.message ||
+      "რეგისტრაციისას მოხდა შეცდომა.";
+
+
+    if (
+      error.code === "23505" ||
+      message.toLowerCase().includes("username")
+    ) {
+
+      message =
+        "ეს username უკვე დაკავებულია.";
+
+    }
+
+
     showMessage(
       $("registerMessage"),
-      error.message,
+      message,
       "error"
     );
 
@@ -1363,79 +1356,97 @@ async function changePassword() {
 
 async function startApp() {
 
-  const {
-    data,
-    error
-  } =
-    await supabaseClient.auth.getUser();
-
-
-  if (error || !data.user) {
-
+  if (appStarted || appStarting) {
     return;
-
   }
 
 
-  currentUser =
-    data.user;
+  appStarting = true;
 
 
-  const {
-    data: profileData,
-    error: profileError
-  } =
-    await supabaseClient
-      .from("profiles")
-      .select("id, username")
-      .eq("id", currentUser.id)
-      .maybeSingle();
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.getUser();
 
 
-  if (profileError) {
+    if (error || !data.user) {
+      return;
+    }
 
-    console.error(profileError);
 
-    throw profileError;
+    currentUser =
+      data.user;
+
+
+    const {
+      data: profileData,
+      error: profileError
+    } =
+      await supabaseClient
+        .from("profiles")
+        .select("id, username")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+
+
+    if (profileError) {
+
+      console.error(profileError);
+
+      throw profileError;
+
+    }
+
+
+    if (!profileData) {
+
+      throw new Error(
+        "პროფილი ვერ მოიძებნა."
+      );
+
+    }
+
+
+    currentProfile =
+      profileData;
+
+
+    $("currentUsername")
+      .textContent =
+      currentProfile.username;
+
+
+    $("authScreen")
+      .classList.add("hidden");
+
+
+    $("appScreen")
+      .classList.remove("hidden");
+
+
+    await loadFriendRequests();
+
+    await loadConversations();
+
+    await loadFiles();
+
+    subscribeRealtime();
+
+    startPolling();
+
+
+    appStarted = true;
+
+
+  } finally {
+
+    appStarting = false;
 
   }
-
-
-  if (!profileData) {
-
-    throw new Error(
-      "პროფილი ვერ მოიძებნა."
-    );
-
-  }
-
-
-  currentProfile =
-    profileData;
-
-
-  $("currentUsername")
-    .textContent =
-    currentProfile.username;
-
-
-  $("authScreen")
-    .classList.add("hidden");
-
-
-  $("appScreen")
-    .classList.remove("hidden");
-
-
-  await loadFriendRequests();
-
-  await loadConversations();
-
-  await loadFiles();
-
-  subscribeRealtime();
-
-  startPolling();
 
 }
 
@@ -1449,6 +1460,15 @@ $("logoutBtn").addEventListener(
   async function() {
 
     stopPolling();
+
+    appStarted = false;
+
+    currentUser = null;
+
+    currentProfile = null;
+
+    selectedUser = null;
+
 
     if (messageChannel) {
 
@@ -1493,7 +1513,11 @@ $("searchUsername").addEventListener(
   function(event) {
 
     if (event.key === "Enter") {
+
+      event.preventDefault();
+
       searchUser();
+
     }
 
   }
@@ -1506,6 +1530,10 @@ async function searchUser() {
     $("searchUsername")
       .value
       .trim();
+
+
+  const requestId =
+    ++searchRequestId;
 
 
   $("searchResult").innerHTML = "";
@@ -1542,6 +1570,11 @@ async function searchUser() {
       );
 
 
+    if (requestId !== searchRequestId) {
+      return;
+    }
+
+
     if (error) {
       throw error;
     }
@@ -1550,18 +1583,33 @@ async function searchUser() {
     const users =
       (data || []).filter(
         function(user) {
-          return user.id !== currentUser.id;
+
+          return (
+            currentUser &&
+            user.id !== currentUser.id
+          );
+
         }
       );
 
 
     if (users.length === 0) {
 
+      if (requestId !== searchRequestId) {
+        return;
+      }
+
       showMessage(
         $("searchResult"),
         "მომხმარებელი ვერ მოიძებნა."
       );
 
+      return;
+
+    }
+
+
+    if (requestId !== searchRequestId) {
       return;
     }
 
@@ -1571,8 +1619,14 @@ async function searchUser() {
 
     for (const user of users) {
 
+      if (requestId !== searchRequestId) {
+        return;
+      }
+
+
       const box =
         document.createElement("div");
+
 
       box.className =
         "user-result";
@@ -1606,10 +1660,16 @@ async function searchUser() {
 
             await sendFriendRequest(user);
 
-            await renderRelationship(
-              user,
-              box
-            );
+            if (
+              document.body.contains(box)
+            ) {
+
+              await renderRelationship(
+                user,
+                box
+              );
+
+            }
 
           }
         );
@@ -1641,6 +1701,11 @@ async function searchUser() {
 
   } catch (error) {
 
+    if (requestId !== searchRequestId) {
+      return;
+    }
+
+
     console.error(
       "Search error:",
       error
@@ -1667,6 +1732,16 @@ async function renderRelationship(
   user,
   box
 ) {
+
+  if (
+    !box ||
+    !document.body.contains(box)
+  ) {
+
+    return;
+
+  }
+
 
   const relationship =
     box.querySelector(
@@ -1700,6 +1775,13 @@ async function renderRelationship(
       .limit(1);
 
 
+  if (
+    !document.body.contains(box)
+  ) {
+    return;
+  }
+
+
   if (friendshipError) {
 
     console.error(friendshipError);
@@ -1722,6 +1804,7 @@ async function renderRelationship(
     );
 
     return;
+
   }
 
 
@@ -1751,6 +1834,13 @@ async function renderRelationship(
       );
 
 
+  if (
+    !document.body.contains(box)
+  ) {
+    return;
+  }
+
+
   if (requestError) {
 
     console.error(requestError);
@@ -1762,10 +1852,12 @@ async function renderRelationship(
     (requests || [])
       .find(
         function(request) {
+
           return (
             request.sender_id ===
             currentUser.id
           );
+
         }
       );
 
@@ -1774,10 +1866,12 @@ async function renderRelationship(
     (requests || [])
       .find(
         function(request) {
+
           return (
             request.receiver_id ===
             currentUser.id
           );
+
         }
       );
 
@@ -1812,14 +1906,22 @@ async function renderRelationship(
         "click",
         async function() {
 
-          await acceptFriendRequest(
-            incoming.id
-          );
+          try {
 
-          await renderRelationship(
-            user,
-            box
-          );
+            await acceptFriendRequest(
+              incoming.id
+            );
+
+            await renderRelationship(
+              user,
+              box
+            );
+
+          } catch (error) {
+
+            alert(error.message);
+
+          }
 
         }
       );
@@ -1833,20 +1935,29 @@ async function renderRelationship(
         "click",
         async function() {
 
-          await rejectFriendRequest(
-            incoming.id
-          );
+          try {
 
-          await renderRelationship(
-            user,
-            box
-          );
+            await rejectFriendRequest(
+              incoming.id
+            );
+
+            await renderRelationship(
+              user,
+              box
+            );
+
+          } catch (error) {
+
+            alert(error.message);
+
+          }
 
         }
       );
 
 
     return;
+
   }
 
 
@@ -1862,7 +1973,13 @@ async function renderRelationship(
     );
 
     return;
+
   }
+
+
+  addBtn.classList.remove(
+    "hidden"
+  );
 
 
   relationship.innerHTML =
@@ -2070,6 +2187,10 @@ async function acceptFriendRequest(
   }
 
 
+  lastFriendRequestRenderKey = "";
+
+  lastConversationRenderKey = "";
+
   await loadFriendRequests();
 
   await loadConversations();
@@ -2111,6 +2232,8 @@ async function rejectFriendRequest(
 
   }
 
+
+  lastFriendRequestRenderKey = "";
 
   await loadFriendRequests();
 
@@ -2157,13 +2280,41 @@ async function loadFriendRequests() {
 
     console.error(error);
 
-    $("friendRequests").innerHTML =
-      `<div class="message error">
-        ${escapeHtml(error.message)}
-      </div>`;
+    return;
+
+  }
+
+
+  const renderKey =
+    (data || [])
+      .map(
+        function(request) {
+
+          return (
+            request.id +
+            ":" +
+            request.status +
+            ":" +
+            request.created_at
+          );
+
+        }
+      )
+      .join("|");
+
+
+  if (
+    renderKey ===
+    lastFriendRequestRenderKey
+  ) {
 
     return;
+
   }
+
+
+  lastFriendRequestRenderKey =
+    renderKey;
 
 
   if (!data || data.length === 0) {
@@ -2174,10 +2325,12 @@ async function loadFriendRequests() {
       </div>`;
 
     return;
+
   }
 
 
-  $("friendRequests").innerHTML = "";
+  const fragment =
+    document.createDocumentFragment();
 
 
   for (const request of data) {
@@ -2209,6 +2362,7 @@ async function loadFriendRequests() {
 
     const box =
       document.createElement("div");
+
 
     box.className =
       "request-item";
@@ -2300,10 +2454,16 @@ async function loadFriendRequests() {
       );
 
 
-    $("friendRequests")
-      .appendChild(box);
+    fragment.appendChild(box);
 
   }
+
+
+  $("friendRequests")
+    .innerHTML = "";
+
+  $("friendRequests")
+    .appendChild(fragment);
 
 }
 
@@ -2323,6 +2483,9 @@ async function selectUser(
     username: user.username
 
   };
+
+
+  lastMessageRenderKey = "";
 
 
   $("chatEmpty")
@@ -2389,6 +2552,7 @@ async function updateChatStatus() {
       "👥 მეგობრები";
 
     return;
+
   }
 
 
@@ -2421,6 +2585,10 @@ async function loadMessages() {
 
   try {
 
+    const selectedUserId =
+      selectedUser.id;
+
+
     const {
       data,
       error
@@ -2434,9 +2602,9 @@ async function loadMessages() {
           "and(sender_id.eq." +
           currentUser.id +
           ",receiver_id.eq." +
-          selectedUser.id +
+          selectedUserId +
           "),and(sender_id.eq." +
-          selectedUser.id +
+          selectedUserId +
           ",receiver_id.eq." +
           currentUser.id +
           ")"
@@ -2451,6 +2619,16 @@ async function loadMessages() {
 
     if (error) {
       throw error;
+    }
+
+
+    if (
+      !selectedUser ||
+      selectedUser.id !== selectedUserId
+    ) {
+
+      return;
+
     }
 
 
@@ -2506,6 +2684,8 @@ async function loadMessages() {
 
 
     if (unread.length > 0) {
+
+      lastConversationRenderKey = "";
 
       await loadConversations();
 
@@ -2596,6 +2776,10 @@ function renderMessages(
   }
 
 
+  const fragment =
+    document.createDocumentFragment();
+
+
   for (const message of messages) {
 
     const mine =
@@ -2652,9 +2836,12 @@ function renderMessages(
 
     row.appendChild(bubble);
 
-    container.appendChild(row);
+    fragment.appendChild(row);
 
   }
+
+
+  container.appendChild(fragment);
 
 
   if (shouldScroll) {
@@ -2759,6 +2946,11 @@ async function sendMessage() {
 
     $("messageStatus")
       .textContent = "";
+
+
+    lastMessageRenderKey = "";
+
+    lastConversationRenderKey = "";
 
 
     await loadMessages();
@@ -2884,20 +3076,59 @@ async function loadConversations() {
     0
   ) {
 
-    $("conversations").innerHTML =
-      `<div class="small">
-        ჯერ ჩატი არ გაქვს.
-      </div>`;
+    if (
+      lastConversationRenderKey !==
+      "empty"
+    ) {
+
+      lastConversationRenderKey =
+        "empty";
+
+      $("conversations").innerHTML =
+        `<div class="small">
+          ჯერ ჩატი არ გაქვს.
+        </div>`;
+
+    }
 
     return;
 
   }
 
 
-  $("conversations").innerHTML =
-    `<div class="loading">
-      იტვირთება...
-    </div>`;
+  const conversationKey =
+    Array.from(
+      conversations.entries()
+    )
+      .map(
+        function([
+          userId,
+          conversation
+        ]) {
+
+          return (
+            userId +
+            ":" +
+            conversation.lastMessage.id +
+            ":" +
+            conversation.lastMessage.read_at +
+            ":" +
+            conversation.unread
+          );
+
+        }
+      )
+      .join("|");
+
+
+  if (
+    conversationKey ===
+    lastConversationRenderKey
+  ) {
+
+    return;
+
+  }
 
 
   for (
@@ -2929,7 +3160,12 @@ async function loadConversations() {
   }
 
 
-  $("conversations").innerHTML = "";
+  lastConversationRenderKey =
+    conversationKey;
+
+
+  const fragment =
+    document.createDocumentFragment();
 
 
   for (
@@ -3022,16 +3258,23 @@ async function loadConversations() {
         });
 
 
+        lastConversationRenderKey = "";
+
         await loadConversations();
 
       }
     );
 
 
-    $("conversations")
-      .appendChild(item);
+    fragment.appendChild(item);
 
   }
+
+
+  $("conversations").innerHTML = "";
+
+  $("conversations")
+    .appendChild(fragment);
 
 }
 
@@ -3267,6 +3510,10 @@ async function loadFiles() {
   $("filesList").innerHTML = "";
 
 
+  const fragment =
+    document.createDocumentFragment();
+
+
   for (const file of data) {
 
     const item =
@@ -3332,10 +3579,15 @@ async function loadFiles() {
       );
 
 
-    $("filesList")
-      .appendChild(item);
+    fragment.appendChild(item);
 
   }
+
+
+  $("filesList").innerHTML = "";
+
+  $("filesList")
+    .appendChild(fragment);
 
 }
 
@@ -3557,6 +3809,9 @@ function subscribeRealtime() {
           }
 
 
+          lastConversationRenderKey =
+            "";
+
           await loadConversations();
 
         }
@@ -3600,6 +3855,9 @@ function subscribeRealtime() {
               currentUser.id
           ) {
 
+            lastFriendRequestRenderKey =
+              "";
+
             await loadFriendRequests();
 
           }
@@ -3629,6 +3887,12 @@ function startPolling() {
         }
 
 
+        /*
+          Polling ახლა მხოლოდ fallback-ია.
+          3 წამზე აღარ მუშაობს და არაფერს
+          ძალით აღარ გადახატავს.
+        */
+
         await loadFriendRequests();
 
         await loadConversations();
@@ -3636,15 +3900,12 @@ function startPolling() {
 
         if (selectedUser) {
 
-          lastMessageRenderKey =
-            "";
-
           await loadMessages();
 
         }
 
       },
-      3000
+      15000
     );
 
 }
@@ -3703,26 +3964,23 @@ supabaseClient.auth.onAuthStateChange(
 
     if (
       session &&
-      session.user
+      session.user &&
+      !currentUser
     ) {
 
-      if (!currentUser) {
+      try {
 
-        try {
+        await startApp();
 
-          await startApp();
+      } catch (error) {
 
-        } catch (error) {
+        console.error(error);
 
-          console.error(error);
-
-          showMessage(
-            $("loginMessage"),
-            error.message,
-            "error"
-          );
-
-        }
+        showMessage(
+          $("loginMessage"),
+          error.message,
+          "error"
+        );
 
       }
 
