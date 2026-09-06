@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111827">
+
+  <title>Friends</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 34px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #6366f1;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 13px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #4f46e5;
+      color: white;
+      width: 100%;
+      margin-top: 6px;
+    }
+
+    button:hover {
+      opacity: 0.92;
+    }
+
+    button.secondary {
+      background: #6b7280;
+    }
+
+    button.danger {
+      background: #dc2626;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .tabs button {
+      margin: 0;
+    }
+
+    .tabs button.active {
+      background: #111827;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 10px;
+      margin: 12px 0;
+      background: #eef2ff;
+      color: #3730a3;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .message.success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .user-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .user-name {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .logout {
+      width: auto;
+      margin: 0;
+      padding: 10px 16px;
+    }
+
+    .upload-area {
+      border: 2px dashed #9ca3af;
+      border-radius: 16px;
+      padding: 35px 20px;
+      text-align: center;
+      cursor: pointer;
+      background: #f9fafb;
+      transition: 0.2s;
+    }
+
+    .upload-area:hover {
+      background: #eef2ff;
+      border-color: #6366f1;
+    }
+
+    .upload-area.dragover {
+      background: #e0e7ff;
+      border-color: #4f46e5;
+    }
+
+    .upload-icon {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .file-list {
+      margin-top: 20px;
+    }
+
+    .file-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #fff;
+    }
+
+    .file-info {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .file-name {
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    .file-meta {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 5px;
+    }
+
+    .file-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .file-actions button {
+      width: auto;
+      margin: 0;
+      padding: 9px 14px;
+      font-size: 14px;
+    }
+
+    .progress {
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #4f46e5;
+      transition: width 0.2s;
+    }
+
+    .empty {
+      text-align: center;
+      color: #6b7280;
+      padding: 25px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #6b7280;
+    }
+
+    .small {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 12px;
+      }
+
+      .card {
+        padding: 18px;
+        border-radius: 14px;
+      }
+
+      .logo {
+        font-size: 28px;
+      }
+
+      .file-info {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="logo">
+    👥 Friends
+  </div>
+
+  <!-- AUTH -->
+  <section id="authSection" class="card">
+
+    <div class="tabs">
+      <button id="loginTab" class="active" onclick="showLogin()">
+        შესვლა
+      </button>
+
+      <button id="registerTab" onclick="showRegister()">
+        რეგისტრაცია
+      </button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginForm">
+
+      <h2>შესვლა</h2>
+
+      <input
+        id="loginEmail"
+        type="email"
+        placeholder="ელფოსტა"
+        autocomplete="email"
+      >
+
+      <input
+        id="loginPassword"
+        type="password"
+        placeholder="პაროლი"
+        autocomplete="current-password"
+      >
+
+      <button onclick="login()">
+        შესვლა
+      </button>
+
+    </div>
+
+    <!-- REGISTER -->
+    <div id="registerForm" class="hidden">
+
+      <h2>რეგისტრაცია</h2>
+
+      <input
+        id="registerUsername"
+        type="text"
+        placeholder="მომხმარებლის სახელი"
+        autocomplete="username"
+      >
+
+      <input
+        id="registerEmail"
+        type="email"
+        placeholder="ელფოსტა"
+        autocomplete="email"
+      >
+
+      <input
+        id="registerPassword"
+        type="password"
+        placeholder="პაროლი"
+        autocomplete="new-password"
+      >
+
+      <input
+        id="registerPassword2"
+        type="password"
+        placeholder="გაიმეორე პაროლი"
+        autocomplete="new-password"
+      >
+
+      <button onclick="register()">
+        ანგარიშის შექმნა
+      </button>
+
+      <p class="small">
+        მომხმარებლის სახელი და პაროლი თავად აირჩიე.
+      </p>
+
+    </div>
+
+    <div id="authMessage" class="message hidden"></div>
+
+  </section>
+
+
+  <!-- APP -->
+  <section id="appSection" class="hidden">
+
+    <div class="card">
+
+      <div class="user-bar">
+
+        <div>
+          <div class="small">მომხმარებელი</div>
+          <div id="currentUsername" class="user-name"></div>
+        </div>
+
+        <button
+          class="secondary logout"
+          onclick="logout()"
+        >
+          გამოსვლა
+        </button>
+
+      </div>
+
+      <h2>ჩემი ფაილები</h2>
+
+      <div
+        id="uploadArea"
+        class="upload-area"
+      >
+
+        <div class="upload-icon">📁</div>
+
+        <strong>
+          დააჭირე აქ ან გადაათრიე ფაილი
+        </strong>
+
+        <p class="small">
+          ფოტო, ვიდეო ან დოკუმენტი<br>
+          მაქსიმუმ 50 MB
+        </p>
+
+        <input
+          id="fileInput"
+          type="file"
+          multiple
+        >
+
+      </div>
+
+      <div class="progress" id="progress">
+        <div
+          class="progress-bar"
+          id="progressBar"
+        ></div>
+      </div>
+
+      <div id="uploadMessage" class="message hidden"></div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>ატვირთული ფაილები</h2>
+
+      <div id="fileList" class="file-list">
+        <div class="loading">
+          იტვირთება...
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<script>
+  /*
+    =====================================================
+    SUPABASE CONFIGURATION
+    =====================================================
+  */
+
+  const SUPABASE_URL =
+    "https://ihuiepozcsptkxslpgjb.supabase.co";
+
+  /*
+    აქ ჩასვი შენი Publishable key.
+
+    მაგალითად:
+
+    const SUPABASE_ANON_KEY =
+      "sb_publishable_xxxxxxxxxxxxxxxxx";
+  */
+
+  const SUPABASE_ANON_KEY =
+    "sb_publishable_iM_PP_hIpGCsAPn1-lAj3w_FH9kI3fS";
+
+
+  /*
+    =====================================================
+    SUPABASE INITIALIZATION
+    =====================================================
+  */
+
+  let supabaseClient = null;
+  let currentUser = null;
+
+
+  function isConfigured() {
+
+    return (
+      SUPABASE_URL &&
+      SUPABASE_ANON_KEY &&
+      !SUPABASE_ANON_KEY.includes("ჩასვი_აქ") &&
+      !SUPABASE_ANON_KEY.includes("YOUR_")
+    );
+
+  }
+
+
+  if (isConfigured()) {
+
+    supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      );
+
+  } else {
+
+    showAuthMessage(
+      "Supabase ჯერ არ არის კონფიგურირებული.\n\n" +
+      "index.html-ში ჩასვი შენი Publishable Key.",
+      true
+    );
+
+  }
+
+
+  /*
+    =====================================================
+    AUTH UI
+    =====================================================
+  */
+
+  function showLogin() {
+
+    document
+      .getElementById("loginForm")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("registerForm")
+      .classList.add("hidden");
+
+    document
+      .getElementById("loginTab")
+      .classList.add("active");
+
+    document
+      .getElementById("registerTab")
+      .classList.remove("active");
+
+    clearAuthMessage();
+  }
+
+
+  function showRegister() {
+
+    document
+      .getElementById("loginForm")
+      .classList.add("hidden");
+
+    document
+      .getElementById("registerForm")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("loginTab")
+      .classList.remove("active");
+
+    document
+      .getElementById("registerTab")
+      .classList.add("active");
+
+    clearAuthMessage();
+  }
+
+
+  function showAuthMessage(message, error = false) {
+
+    const box =
+      document.getElementById("authMessage");
+
+    box.textContent = message;
+
+    box.classList.remove(
+      "hidden",
+      "error",
+      "success"
+    );
+
+    box.classList.add(
+      error ? "error" : "success"
+    );
+  }
+
+
+  function clearAuthMessage() {
+
+    const box =
+      document.getElementById("authMessage");
+
+    box.classList.add("hidden");
+
+    box.textContent = "";
+
+  }
+
+
+  function showUploadMessage(message, error = false) {
+
+    const box =
+      document.getElementById("uploadMessage");
+
+    box.textContent = message;
+
+    box.classList.remove(
+      "hidden",
+      "error",
+      "success"
+    );
+
+    box.classList.add(
+      error ? "error" : "success"
+    );
+
+  }
+
+
+  /*
+    =====================================================
+    REGISTER
+    =====================================================
+  */
+
+  async function register() {
+
+    if (!supabaseClient) {
+
+      showAuthMessage(
+        "Supabase არ არის კონფიგურირებული.",
+        true
+      );
+
+      return;
+    }
+
+
+    const username =
+      document
+        .getElementById("registerUsername")
+        .value
+        .trim();
+
+    const email =
+      document
+        .getElementById("registerEmail")
+        .value
+        .trim();
+
+    const password =
+      document
+        .getElementById("registerPassword")
+        .value;
+
+    const password2 =
+      document
+        .getElementById("registerPassword2")
+        .value;
+
+
+    if (!username) {
+
+      showAuthMessage(
+        "შეიყვანე მომხმარებლის სახელი.",
+        true
+      );
+
+      return;
+    }
+
+
+    if (username.length < 3) {
+
+      showAuthMessage(
+        "მომხმარებლის სახელი უნდა იყოს მინიმუმ 3 სიმბოლო.",
+        true
+      );
+
+      return;
+    }
+
+
+    if (!email) {
+
+      showAuthMessage(
+        "შეიყვანე ელფოსტა.",
+        true
+      );
+
+      return;
+    }
+
+
+    if (!password) {
+
+      showAuthMessage(
+        "შეიყვანე პაროლი.",
+        true
+      );
+
+      return;
+    }
+
+
+    if (password.length < 6) {
+
+      showAuthMessage(
+        "პაროლი უნდა იყოს მინიმუმ 6 სიმბოლო.",
+        true
+      );
+
+      return;
+    }
+
+
+    if (password !== password2) {
+
+      showAuthMessage(
+        "პაროლები ერთმანეთს არ ემთხვევა.",
+        true
+      );
+
+      return;
+    }
+
+
+    showAuthMessage(
+      "რეგისტრაცია მიმდინარეობს..."
+    );
+
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth.signUp({
+
+          email: email,
+
+          password: password,
+
+          options: {
+
+            data: {
+              username: username
+            }
+
+          }
+
+        });
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      /*
+        მომხმარებლის პროფილს ჩვენი
+        Database Trigger ავტომატურად შექმნის.
+      */
+
+
+      if (data.user) {
+
+        showAuthMessage(
+          "რეგისტრაცია წარმატებით დასრულდა.\n" +
+          "ახლა შეგიძლია შეხვიდე ანგარიშში."
+        );
+
+        document
+          .getElementById("loginEmail")
+          .value = email;
+
+        document
+          .getElementById("loginPassword")
+          .value = password;
+
+        showLogin();
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      showAuthMessage(
+        "რეგისტრაცია ვერ შესრულდა:\n\n" +
+        getErrorMessage(error),
+        true
+      );
+
+    }
+
+  }
+
+
+  /*
+    =====================================================
+    LOGIN
+    =====================================================
+  */
+
+  async function login() {
+
+    if (!supabaseClient) {
+
+      showAuthMessage(
+        "Supabase არ არის კონფიგურირებული.",
+        true
+      );
+
+      return;
+    }
+
+
+    const email =
+      document
+        .getElementById("loginEmail")
+        .value
+        .trim();
+
+    const password =
+      document
+        .getElementById("loginPassword")
+        .value;
+
+
+    if (!email || !password) {
+
+      showAuthMessage(
+        "შეიყვანე ელფოსტა და პაროლი.",
+        true
+      );
+
+      return;
+    }
+
+
+    showAuthMessage(
+      "შესვლა მიმდინარეობს..."
+    );
+
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth
+          .signInWithPassword({
+
+            email: email,
+
+            password: password
+
+          });
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      currentUser = data.user;
+
+      await showApp();
+
+    } catch (error) {
+
+      console.error(error);
+
+      showAuthMessage(
+        "შესვლა ვერ შესრულდა:\n\n" +
+        getErrorMessage(error),
+        true
+      );
+
+    }
+
+  }
+
+
+  /*
+    =====================================================
+    LOGOUT
+    =====================================================
+  */
+
+  async function logout() {
+
+    if (!supabaseClient) return;
+
+
+    await supabaseClient.auth.signOut();
+
+    currentUser = null;
+
+    document
+      .getElementById("appSection")
+      .classList.add("hidden");
+
+    document
+      .getElementById("authSection")
+      .classList.remove("hidden");
+
+    showLogin();
+
+  }
+
+
+  /*
+    =====================================================
+    SHOW APP
+    =====================================================
+  */
+
+  async function showApp() {
+
+    document
+      .getElementById("authSection")
+      .classList.add("hidden");
+
+    document
+      .getElementById("appSection")
+      .classList.remove("hidden");
+
+
+    await loadProfile();
+
+    await loadFiles();
+
+  }
+
+
+  /*
+    =====================================================
+    PROFILE
+    =====================================================
+  */
+
+  async function loadProfile() {
+
+    if (!currentUser) return;
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("profiles")
+        .select("username")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+
+
+    if (error) {
+
+      console.error(error);
+
+      document
+        .getElementById("currentUsername")
+        .textContent =
+        currentUser.email;
+
+      return;
+    }
+
+
+    if (data) {
+
+      document
+        .getElementById("currentUsername")
+        .textContent =
+        data.username;
+
+    } else {
+
+      document
+        .getElementById("currentUsername")
+        .textContent =
+        currentUser.email;
+
+    }
+
+  }
+
+
+  /*
+    =====================================================
+    FILE UPLOAD
+    =====================================================
+  */
+
+  const uploadArea =
+    document.getElementById("uploadArea");
+
+  const fileInput =
+    document.getElementById("fileInput");
+
+
+  uploadArea.addEventListener(
+    "click",
+    () => {
+
+      fileInput.click();
+
+    }
+  );
+
+
+  fileInput.addEventListener(
+    "change",
+    async (event) => {
+
+      const files =
+        Array.from(event.target.files);
+
+      await uploadFiles(files);
+
+      fileInput.value = "";
+
+    }
+  );
+
+
+  uploadArea.addEventListener(
+    "dragover",
+    (event) => {
+
+      event.preventDefault();
+
+      uploadArea.classList.add("dragover");
+
+    }
+  );
+
+
+  uploadArea.addEventListener(
+    "dragleave",
+    () => {
+
+      uploadArea.classList.remove("dragover");
+
+    }
+  );
+
+
+  uploadArea.addEventListener(
+    "drop",
+    async (event) => {
+
+      event.preventDefault();
+
+      uploadArea.classList.remove("dragover");
+
+      const files =
+        Array.from(event.dataTransfer.files);
+
+      await uploadFiles(files);
+
+    }
+  );
+
+
+  async function uploadFiles(files) {
+
+    if (!currentUser) {
+
+      showUploadMessage(
+        "ჯერ უნდა შეხვიდე ანგარიშში.",
+        true
+      );
+
+      return;
+    }
+
+
+    if (!files.length) return;
+
+
+    const MAX_SIZE =
+      50 * 1024 * 1024;
+
+
+    for (const file of files) {
+
+      if (file.size > MAX_SIZE) {
+
+        showUploadMessage(
+          `"${file.name}" ძალიან დიდია.\n` +
+          "მაქსიმალური ზომაა 50 MB.",
+          true
+        );
+
+        continue;
+      }
+
+
+      try {
+
+        showUploadMessage(
+          `იტვირთება: ${file.name}`
+        );
+
+
+        const fileId =
+          crypto.randomUUID();
+
+
+        const safeName =
+          file.name
+            .replace(/[^\w.\-ა-ჰ ]/g, "_");
+
+
+        /*
+          ფაილი ინახება მომხმარებლის
+          საკუთარი ID-ის საქაღალდეში.
+        */
+
+        const storagePath =
+          `${currentUser.id}/${fileId}-${safeName}`;
+
+
+        /*
+          3 დღე
+        */
+
+        const expiresAt =
+          new Date(
+            Date.now() +
+            3 * 24 * 60 * 60 * 1000
+          ).toISOString();
+
+
+        const {
+          error: uploadError
+        } =
+          await supabaseClient.storage
+            .from("user-files")
+            .upload(
+              storagePath,
+              file,
+              {
+                upsert: false,
+                contentType:
+                  file.type ||
+                  "application/octet-stream"
+              }
+            );
+
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+
+        /*
+          Database-ში ვინახავთ
+          ფაილის ინფორმაციას.
+        */
+
+        const {
+          error: dbError
+        } =
+          await supabaseClient
+            .from("files")
+            .insert({
+
+              id: fileId,
+
+              user_id:
+                currentUser.id,
+
+              file_name:
+                file.name,
+
+              storage_path:
+                storagePath,
+
+              file_type:
+                file.type,
+
+              file_size:
+                file.size,
+
+              expires_at:
+                expiresAt
+
+            });
+
+
+        if (dbError) {
+
+          /*
+            თუ Database ჩანაწერი ვერ შეიქმნა,
+            Storage-ში ატვირთული ფაილიც წავშალოთ.
+          */
+
+          await supabaseClient.storage
+            .from("user-files")
+            .remove([storagePath]);
+
+          throw dbError;
+        }
+
+
+        showUploadMessage(
+          `"${file.name}" წარმატებით აიტვირთა.`
+        );
+
+      } catch (error) {
+
+        console.error(error);
+
+        showUploadMessage(
+          `"${file.name}" ვერ აიტვირთა:\n\n` +
+          getErrorMessage(error),
+          true
+        );
+
+      }
+
+    }
+
+
+    await loadFiles();
+
+  }
+
+
+  /*
+    =====================================================
+    LOAD FILES
+    =====================================================
+  */
+
+  async function loadFiles() {
+
+    if (!currentUser) return;
+
+
+    const list =
+      document.getElementById("fileList");
+
+
+    list.innerHTML =
+      '<div class="loading">იტვირთება...</div>';
+
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("files")
+          .select("*")
+          .eq("user_id", currentUser.id)
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      /*
+        ძველი/ვადაგასული ჩანაწერები
+        მომხმარებელს აღარ ვაჩვენოთ.
+      */
+
+      const now =
+        new Date();
+
+
+      const activeFiles =
+        (data || []).filter(
+          file =>
+            new Date(file.expires_at) > now
+        );
+
+
+      if (!activeFiles.length) {
+
+        list.innerHTML =
+          '<div class="empty">' +
+          'ჯერ ფაილები არ აგიტვირთავს.' +
+          '</div>';
+
+        return;
+      }
+
+
+      list.innerHTML = "";
+
+
+      for (const file of activeFiles) {
+
+        const item =
+          document.createElement("div");
+
+        item.className =
+          "file-item";
+
+
+        const created =
+          new Date(
+            file.created_at
+          ).toLocaleString("ka-GE");
+
+
+        const expires =
+          new Date(
+            file.expires_at
+          ).toLocaleString("ka-GE");
+
+
+        item.innerHTML = `
+
+          <div class="file-info">
+
+            <div>
+
+              <div class="file-name">
+                ${escapeHtml(file.file_name)}
+              </div>
+
+              <div class="file-meta">
+                ზომა: ${formatBytes(file.file_size)}
+                <br>
+                ატვირთულია: ${created}
+                <br>
+                წაიშლება: ${expires}
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="file-actions">
+
+            <button
+              onclick="openFile('${file.id}')"
+            >
+              გახსნა
+            </button>
+
+            <button
+              class="danger"
+              onclick="deleteFile('${file.id}')"
+            >
+              წაშლა
+            </button>
+
+          </div>
+
+        `;
+
+
+        list.appendChild(item);
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      list.innerHTML =
+        `<div class="message error">
+          ფაილების ჩატვირთვა ვერ მოხერხდა:
+          
+          ${escapeHtml(
+            getErrorMessage(error)
+          )}
+        </div>`;
+
+    }
+
+  }
+
+
+  /*
+    =====================================================
+    OPEN FILE
+    =====================================================
+  */
+
+  async function openFile(fileId) {
+
+    try {
+
+      const {
+        data: file,
+        error
+      } =
+        await supabaseClient
+          .from("files")
+          .select("*")
+          .eq("id", fileId)
+          .eq("user_id", currentUser.id)
+          .single();
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      /*
+        მხოლოდ 1 საათით მოქმედი
+        Signed URL.
+      */
+
+      const {
+        data: signedData,
+        error: signedError
+      } =
+        await supabaseClient.storage
+          .from("user-files")
+          .createSignedUrl(
+            file.storage_path,
+            60 * 60
+          );
+
+
+      if (signedError) {
+        throw signedError;
+      }
+
+
+      window.open(
+        signedData.signedUrl,
+        "_blank"
+      );
+
+    } catch (error) {
+
+      alert(
+        "ფაილის გახსნა ვერ მოხერხდა:\n\n" +
+        getErrorMessage(error)
+      );
+
+    }
+
+  }
+
+
+  /*
+    =====================================================
+    DELETE FILE
+    =====================================================
+  */
+
+  async function deleteFile(fileId) {
+
+    if (!currentUser) return;
+
+
+    const confirmed =
+      confirm(
+        "ნამდვილად გინდა ამ ფაილის წაშლა?"
+      );
+
+
+    if (!confirmed) return;
+
+
+    try {
+
+      const {
+        data: file,
+        error
+      } =
+        await supabaseClient
+          .from("files")
+          .select("*")
+          .eq("id", fileId)
+          .eq("user_id", currentUser.id)
+          .single();
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      /*
+        ჯერ Storage-დან ვშლით.
+      */
+
+      const {
+        error: storageError
+      } =
+        await supabaseClient.storage
+          .from("user-files")
+          .remove([
+            file.storage_path
+          ]);
+
+
+      if (storageError) {
+
+        console.warn(
+          "Storage delete warning:",
+          storageError
+        );
+
+      }
+
+
+      /*
+        შემდეგ Database-დან.
+      */
+
+      const {
+        error: dbError
+      } =
+        await supabaseClient
+          .from("files")
+          .delete()
+          .eq("id", fileId)
+          .eq("user_id", currentUser.id);
+
+
+      if (dbError) {
+        throw dbError;
+      }
+
+
+      await loadFiles();
+
+    } catch (error) {
+
+      alert(
+        "ფაილის წაშლა ვერ მოხერხდა:\n\n" +
+        getErrorMessage(error)
+      );
+
+    }
+
+  }
+
+
+  /*
+    =====================================================
+    SESSION CHECK
+    =====================================================
+  */
+
+  async function checkSession() {
+
+    if (!supabaseClient) return;
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth
+        .getSession();
+
+
+    if (error) {
+
+      console.error(error);
+
+      return;
+    }
+
+
+    if (data.session) {
+
+      currentUser =
+        data.session.user;
+
+      await showApp();
+
+    }
+
+  }
+
+
+  /*
+    =====================================================
+    AUTH STATE LISTENER
+    =====================================================
+  */
+
+  if (supabaseClient) {
+
+    supabaseClient.auth
+      .onAuthStateChange(
+        async (event, session) => {
+
+          if (session) {
+
+            currentUser =
+              session.user;
+
+          }
+
+        }
+      );
+
+  }
+
+
+  /*
+    =====================================================
+    HELPERS
+    =====================================================
+  */
+
+  function getErrorMessage(error) {
+
+    if (!error) {
+      return "უცნობი შეცდომა.";
+    }
+
+
+    if (error.message) {
+      return error.message;
+    }
+
+
+    return String(error);
+
+  }
+
+
+  function formatBytes(bytes) {
+
+    if (!bytes) {
+      return "0 B";
+    }
+
+
+    const units =
+      [
+        "B",
+        "KB",
+        "MB",
+        "GB"
+      ];
+
+
+    const index =
+      Math.floor(
+        Math.log(bytes) /
+        Math.log(1024)
+      );
+
+
+    return (
+      (bytes /
+        Math.pow(
+          1024,
+          index
+        )
+      ).toFixed(1)
+      + " "
+      + units[index]
+    );
+
+  }
+
+
+  function escapeHtml(text) {
+
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+  }
+
+
+  /*
+    =====================================================
+    START
+    =====================================================
+  */
+
+  checkSession();
+
+</script>
+
+</body>
+</html>
