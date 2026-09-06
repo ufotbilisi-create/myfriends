@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ka">
 <head>
@@ -111,6 +112,14 @@
       background: #c62828;
     }
 
+    button.success-btn {
+      background: #2e7d32;
+    }
+
+    button.warning-btn {
+      background: #ef6c00;
+    }
+
     button.link-btn {
       background: transparent;
       color: #333;
@@ -149,6 +158,11 @@
     .message.error {
       background: #ffebee;
       color: #b71c1c;
+    }
+
+    .message.warning {
+      background: #fff8e1;
+      color: #6d5200;
     }
 
     .app-grid {
@@ -191,6 +205,18 @@
       font-weight: bold;
     }
 
+    .conversation.unread {
+      font-weight: bold;
+      border: 2px solid #222;
+    }
+
+    .conversation small {
+      display: block;
+      margin-top: 5px;
+      color: #777;
+      font-weight: normal;
+    }
+
     .chat-card {
       min-height: 500px;
       display: flex;
@@ -205,6 +231,12 @@
 
     .chat-header h3 {
       margin: 0;
+    }
+
+    .chat-header-info {
+      margin-top: 8px;
+      color: #666;
+      font-size: 13px;
     }
 
     .chat-messages {
@@ -252,6 +284,12 @@
       margin-top: 4px;
     }
 
+    .bubble-read {
+      font-size: 10px;
+      opacity: .65;
+      margin-top: 3px;
+    }
+
     .send-box {
       display: flex;
       gap: 7px;
@@ -259,6 +297,29 @@
 
     .send-box input {
       margin: 0;
+    }
+
+    .request-item {
+      background: #f2f4f6;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .request-actions {
+      margin-top: 8px;
+    }
+
+    .incoming-notice {
+      background: #e8f5e9;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    .incoming-notice:hover {
+      background: #dff0e1;
     }
 
     .upload-area {
@@ -321,6 +382,24 @@
       text-align: center;
       padding: 20px;
       color: #777;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      display: inline-block;
+      min-width: 20px;
+      padding: 3px 7px;
+      border-radius: 20px;
+      background: #c62828;
+      color: white;
+      font-size: 11px;
+      text-align: center;
     }
 
     @media (max-width: 750px) {
@@ -387,9 +466,7 @@
   </header>
 
 
-  <!-- =========================
-       AUTHENTICATION
-  ========================== -->
+  <!-- AUTH -->
 
   <section id="authSection">
 
@@ -399,7 +476,6 @@
         <button id="showLoginBtn">შესვლა</button>
         <button id="showRegisterBtn" class="secondary">რეგისტრაცია</button>
       </div>
-
 
       <!-- LOGIN -->
 
@@ -491,7 +567,6 @@
 
         <p>
           შეიყვანე ის ელფოსტა, რომლითაც ანგარიშზე დარეგისტრირდი.
-          ჩვენ გამოგიგზავნით პაროლის აღდგენის ბმულს.
         </p>
 
         <input
@@ -520,10 +595,6 @@
 
         <h2>🔐 ახალი პაროლი</h2>
 
-        <p>
-          შეიყვანე ახალი პაროლი.
-        </p>
-
         <input
           id="newPassword"
           type="password"
@@ -551,14 +622,11 @@
   </section>
 
 
-  <!-- =========================
-       APP
-  ========================== -->
+  <!-- APP -->
 
   <section id="appSection" class="hidden">
 
     <div class="app-grid">
-
 
       <!-- SIDEBAR -->
 
@@ -586,13 +654,34 @@
 
         <div id="searchResult"></div>
 
+
+        <!-- FRIEND REQUESTS -->
+
+        <div style="margin-top:20px;">
+
+          <div class="section-title">
+            <h3>👥 მეგობრობის მოთხოვნები</h3>
+            <span id="requestBadge"></span>
+          </div>
+
+          <div id="friendRequestsList">
+            <div class="message">
+              მოთხოვნები არ არის.
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- CONVERSATIONS -->
+
         <div class="conversation-list">
 
           <h3>ჩემი ჩატები</h3>
 
           <div id="conversationList">
             <div class="loading">
-              ჩატები ჯერ არ არის.
+              ჩატები იტვირთება...
             </div>
           </div>
 
@@ -605,7 +694,6 @@
 
       <main>
 
-
         <!-- CHAT -->
 
         <div class="card chat-card">
@@ -616,7 +704,13 @@
               აირჩიე მომხმარებელი
             </h3>
 
+            <div id="chatHeaderInfo" class="chat-header-info"></div>
+
           </div>
+
+
+          <div id="incomingNotice"></div>
+
 
           <div id="chatMessages" class="chat-messages">
 
@@ -625,6 +719,7 @@
             </div>
 
           </div>
+
 
           <div class="send-box">
 
@@ -717,20 +812,8 @@
   const SUPABASE_URL =
     "https://ihuiepozcsptkxslpgjb.supabase.co";
 
-  /*
-   * აქ ჩასვი შენი SUPABASE PUBLISHABLE KEY.
-   *
-   * მაგალითად:
-   *
-   * const SUPABASE_ANON_KEY =
-   *   "sb_publishable_xxxxxxxxxxxxxxxxx";
-   *
-   * არ ჩასვა Secret Key ან Service Role Key.
-   */
-
   const SUPABASE_ANON_KEY =
     "sb_publishable_iM_PP_hIpGCsAPn1-lAj3w_FH9kI3fS";
-
 
   const supabaseClient =
     window.supabase.createClient(
@@ -749,6 +832,9 @@
   let selectedUser = null;
 
   let messageChannel = null;
+  let messageRefreshTimer = null;
+
+  let friendChannel = null;
 
 
   /* =========================================================
@@ -762,7 +848,10 @@
 
   function escapeHtml(value) {
 
-    if (value === null || value === undefined) {
+    if (
+      value === null ||
+      value === undefined
+    ) {
       return "";
     }
 
@@ -772,57 +861,20 @@
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
+
   }
 
 
-  function showMessage(element, text, type = "") {
+  function showMessage(
+    element,
+    text,
+    type = ""
+  ) {
 
     element.innerHTML =
       `<div class="message ${type}">
         ${escapeHtml(text)}
       </div>`;
-
-  }
-
-
-  function hideAuthForms() {
-
-    $("loginForm").classList.add("hidden");
-    $("registerForm").classList.add("hidden");
-    $("forgotForm").classList.add("hidden");
-    $("updatePasswordForm").classList.add("hidden");
-
-  }
-
-
-  function showLogin() {
-
-    hideAuthForms();
-    $("loginForm").classList.remove("hidden");
-
-  }
-
-
-  function showRegister() {
-
-    hideAuthForms();
-    $("registerForm").classList.remove("hidden");
-
-  }
-
-
-  function showForgotPassword() {
-
-    hideAuthForms();
-    $("forgotForm").classList.remove("hidden");
-
-  }
-
-
-  function showUpdatePassword() {
-
-    hideAuthForms();
-    $("updatePasswordForm").classList.remove("hidden");
 
   }
 
@@ -871,39 +923,98 @@
   }
 
 
+  function hideAuthForms() {
+
+    $("loginForm").classList.add("hidden");
+    $("registerForm").classList.add("hidden");
+    $("forgotForm").classList.add("hidden");
+    $("updatePasswordForm").classList.add("hidden");
+
+  }
+
+
+  function showLogin() {
+
+    hideAuthForms();
+
+    $("loginForm")
+      .classList
+      .remove("hidden");
+
+  }
+
+
+  function showRegister() {
+
+    hideAuthForms();
+
+    $("registerForm")
+      .classList
+      .remove("hidden");
+
+  }
+
+
+  function showForgotPassword() {
+
+    hideAuthForms();
+
+    $("forgotForm")
+      .classList
+      .remove("hidden");
+
+  }
+
+
+  function showUpdatePassword() {
+
+    hideAuthForms();
+
+    $("updatePasswordForm")
+      .classList
+      .remove("hidden");
+
+  }
+
+
   /* =========================================================
      AUTH UI
   ========================================================= */
 
-  $("showLoginBtn").addEventListener(
-    "click",
-    showLogin
-  );
+  $("showLoginBtn")
+    .addEventListener(
+      "click",
+      showLogin
+    );
 
-  $("showRegisterBtn").addEventListener(
-    "click",
-    showRegister
-  );
+  $("showRegisterBtn")
+    .addEventListener(
+      "click",
+      showRegister
+    );
 
-  $("forgotPasswordBtn").addEventListener(
-    "click",
-    showForgotPassword
-  );
+  $("forgotPasswordBtn")
+    .addEventListener(
+      "click",
+      showForgotPassword
+    );
 
-  $("backToLoginBtn").addEventListener(
-    "click",
-    showLogin
-  );
+  $("backToLoginBtn")
+    .addEventListener(
+      "click",
+      showLogin
+    );
 
 
   /* =========================================================
      REGISTER
   ========================================================= */
 
-  $("registerBtn").addEventListener(
-    "click",
-    register
-  );
+  $("registerBtn")
+    .addEventListener(
+      "click",
+      register
+    );
 
 
   async function register() {
@@ -939,6 +1050,7 @@
       );
 
       return;
+
     }
 
 
@@ -951,6 +1063,7 @@
       );
 
       return;
+
     }
 
 
@@ -963,6 +1076,7 @@
       );
 
       return;
+
     }
 
 
@@ -975,6 +1089,7 @@
       );
 
       return;
+
     }
 
 
@@ -982,10 +1097,6 @@
 
 
     try {
-
-      /*
-       * ვამოწმებთ username-ს.
-       */
 
       const {
         data: existing,
@@ -1027,11 +1138,9 @@
           password: password,
 
           options: {
-
             data: {
               username: username
             }
-
           }
 
         });
@@ -1050,11 +1159,6 @@
 
       }
 
-
-      /*
-       * თუ Email Confirmation გამორთულია,
-       * მომხმარებელი პირდაპირ შევა.
-       */
 
       const {
         error: profileError
@@ -1085,6 +1189,9 @@
           "success"
         );
 
+        currentUser =
+          data.user;
+
         await loadCurrentUser();
 
       } else {
@@ -1103,7 +1210,8 @@
 
       showMessage(
         $("registerMessage"),
-        error.message || "რეგისტრაციის შეცდომა.",
+        error.message ||
+        "რეგისტრაციის შეცდომა.",
         "error"
       );
 
@@ -1120,22 +1228,24 @@
      LOGIN
   ========================================================= */
 
-  $("loginBtn").addEventListener(
-    "click",
-    login
-  );
+  $("loginBtn")
+    .addEventListener(
+      "click",
+      login
+    );
 
 
-  $("loginPassword").addEventListener(
-    "keydown",
-    function(event) {
+  $("loginPassword")
+    .addEventListener(
+      "keydown",
+      function(event) {
 
-      if (event.key === "Enter") {
-        login();
+        if (event.key === "Enter") {
+          login();
+        }
+
       }
-
-    }
-  );
+    );
 
 
   async function login() {
@@ -1162,6 +1272,7 @@
       );
 
       return;
+
     }
 
 
@@ -1172,11 +1283,6 @@
 
       let email = identifier;
 
-
-      /*
-       * თუ მომხმარებელმა username შეიყვანა,
-       * ვპოულობთ მის ელფოსტას RPC-ის საშუალებით.
-       */
 
       if (!identifier.includes("@")) {
 
@@ -1197,7 +1303,10 @@
         }
 
 
-        if (!data || data.length === 0) {
+        if (
+          !data ||
+          data.length === 0
+        ) {
 
           throw new Error(
             "ასეთი მომხმარებელი ვერ მოიძებნა."
@@ -1206,7 +1315,8 @@
         }
 
 
-        email = data[0].email;
+        email =
+          data[0].email;
 
       }
 
@@ -1215,13 +1325,14 @@
         data,
         error
       } =
-        await supabaseClient.auth.signInWithPassword({
+        await supabaseClient.auth
+          .signInWithPassword({
 
-          email: email,
+            email: email,
 
-          password: password
+            password: password
 
-        });
+          });
 
 
       if (error) {
@@ -1238,8 +1349,10 @@
       }
 
 
-      await loadCurrentUser();
+      currentUser =
+        data.user;
 
+      await loadCurrentUser();
 
     } catch (error) {
 
@@ -1247,7 +1360,8 @@
 
       showMessage(
         $("loginMessage"),
-        error.message || "შესვლის შეცდომა.",
+        error.message ||
+        "შესვლის შეცდომა.",
         "error"
       );
 
@@ -1261,13 +1375,14 @@
 
 
   /* =========================================================
-     PASSWORD RESET EMAIL
+     PASSWORD RESET
   ========================================================= */
 
-  $("sendResetBtn").addEventListener(
-    "click",
-    sendPasswordReset
-  );
+  $("sendResetBtn")
+    .addEventListener(
+      "click",
+      sendPasswordReset
+    );
 
 
   async function sendPasswordReset() {
@@ -1290,6 +1405,7 @@
       );
 
       return;
+
     }
 
 
@@ -1297,10 +1413,6 @@
 
 
     try {
-
-      /*
-       * GitHub Pages-ის მიმდინარე მისამართი.
-       */
 
       const redirectUrl =
         window.location.origin +
@@ -1326,10 +1438,9 @@
 
       showMessage(
         $("resetMessage"),
-        "პაროლის აღდგენის ბმული გამოგზავნილია ელფოსტაზე. შეამოწმე Inbox და Spam.",
+        "პაროლის აღდგენის ბმული გამოგზავნილია. შეამოწმე Inbox და Spam.",
         "success"
       );
-
 
     } catch (error) {
 
@@ -1355,10 +1466,11 @@
      UPDATE PASSWORD
   ========================================================= */
 
-  $("updatePasswordBtn").addEventListener(
-    "click",
-    updatePassword
-  );
+  $("updatePasswordBtn")
+    .addEventListener(
+      "click",
+      updatePassword
+    );
 
 
   async function updatePassword() {
@@ -1384,6 +1496,7 @@
       );
 
       return;
+
     }
 
 
@@ -1396,6 +1509,7 @@
       );
 
       return;
+
     }
 
 
@@ -1433,7 +1547,6 @@
         },
         1200
       );
-
 
     } catch (error) {
 
@@ -1490,12 +1603,14 @@
         }
 
         return;
+
       }
 
 
       if (session?.user) {
 
-        currentUser = session.user;
+        currentUser =
+          session.user;
 
         await loadCurrentUser();
 
@@ -1536,10 +1651,6 @@
     }
 
 
-    /*
-     * ვიღებთ username-ს.
-     */
-
     const {
       data: profile,
       error
@@ -1554,7 +1665,10 @@
         .maybeSingle();
 
 
-    if (!error && profile) {
+    if (
+      !error &&
+      profile
+    ) {
 
       currentUsername =
         profile.username;
@@ -1589,9 +1703,13 @@
 
     await loadFiles();
 
+    await loadFriendRequests();
+
     await loadConversations();
 
     setupRealtime();
+
+    setupFriendRealtime();
 
   }
 
@@ -1619,48 +1737,74 @@
      LOGOUT
   ========================================================= */
 
-  $("logoutBtn").addEventListener(
-    "click",
-    async function() {
+  $("logoutBtn")
+    .addEventListener(
+      "click",
+      async function() {
 
-      if (messageChannel) {
+        if (messageChannel) {
 
-        await supabaseClient
-          .removeChannel(
-            messageChannel
+          await supabaseClient
+            .removeChannel(
+              messageChannel
+            );
+
+          messageChannel = null;
+
+        }
+
+
+        if (friendChannel) {
+
+          await supabaseClient
+            .removeChannel(
+              friendChannel
+            );
+
+          friendChannel = null;
+
+        }
+
+
+        if (messageRefreshTimer) {
+
+          clearInterval(
+            messageRefreshTimer
           );
 
-        messageChannel = null;
+          messageRefreshTimer = null;
+
+        }
+
+
+        await supabaseClient.auth.signOut();
 
       }
-
-
-      await supabaseClient.auth.signOut();
-
-    }
-  );
+    );
 
 
   /* =========================================================
      USER SEARCH
   ========================================================= */
 
-  $("searchUserBtn").addEventListener(
-    "click",
-    searchUser
-  );
+  $("searchUserBtn")
+    .addEventListener(
+      "click",
+      searchUser
+    );
 
 
-  $("searchUsername").addEventListener(
-    "keydown",
-    function(event) {
+  $("searchUsername")
+    .addEventListener(
+      "keydown",
+      function(event) {
 
-      if (event.key === "Enter") {
-        searchUser();
+        if (event.key === "Enter") {
+          searchUser();
+        }
+
       }
-
-    }
-  );
+    );
 
 
   async function searchUser() {
@@ -1675,9 +1819,7 @@
 
 
     if (!username) {
-
       return;
-
     }
 
 
@@ -1700,12 +1842,15 @@
       }
 
 
-      if (!data || data.length === 0) {
+      if (
+        !data ||
+        data.length === 0
+      ) {
 
         $("searchResult").innerHTML =
           `<div class="message">
-             მომხმარებელი ვერ მოიძებნა.
-           </div>`;
+            მომხმარებელი ვერ მოიძებნა.
+          </div>`;
 
         return;
 
@@ -1722,25 +1867,231 @@
 
         $("searchResult").innerHTML =
           `<div class="message">
-             საკუთარი თავის ძებნა არ შეიძლება.
-           </div>`;
+            საკუთარი თავის ძებნა არ შეიძლება.
+          </div>`;
 
         return;
 
       }
 
 
+      await renderSearchResult(user);
+
+    } catch (error) {
+
+      console.error(error);
+
       $("searchResult").innerHTML =
-        `<div class="message">
-           <strong>${escapeHtml(user.username)}</strong>
-           <br>
-           <button id="startChatBtn">
-             💬 ჩატის დაწყება
-           </button>
-         </div>`;
+        `<div class="message error">
+          ${escapeHtml(error.message)}
+        </div>`;
+
+    }
+
+  }
 
 
-      $("startChatBtn").addEventListener(
+  async function renderSearchResult(user) {
+
+    const {
+      data: friendshipData,
+      error: friendshipError
+    } =
+      await supabaseClient
+        .from("friendships")
+        .select("id")
+        .or(
+          `and(user_id.eq.${currentUser.id},friend_id.eq.${user.id}),and(user_id.eq.${user.id},friend_id.eq.${currentUser.id})`
+        )
+        .limit(1);
+
+
+    if (friendshipError) {
+      console.error(friendshipError);
+    }
+
+
+    if (
+      friendshipData &&
+      friendshipData.length > 0
+    ) {
+
+      $("searchResult").innerHTML =
+        `<div class="message success">
+          <strong>${escapeHtml(user.username)}</strong>
+          <br>
+          👥 უკვე მეგობარია
+          <br>
+          <button id="openFriendChatBtn">
+            💬 ჩატის გახსნა
+          </button>
+        </div>`;
+
+
+      $("openFriendChatBtn")
+        .addEventListener(
+          "click",
+          function() {
+
+            selectUser({
+              id: user.id,
+              username: user.username
+            });
+
+          }
+        );
+
+      return;
+
+    }
+
+
+    const {
+      data: requests,
+      error: requestError
+    } =
+      await supabaseClient
+        .from("friend_requests")
+        .select(
+          "id,sender_id,receiver_id,status"
+        )
+        .or(
+          `and(sender_id.eq.${currentUser.id},receiver_id.eq.${user.id}),and(sender_id.eq.${user.id},receiver_id.eq.${currentUser.id})`
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        )
+        .limit(5);
+
+
+    if (requestError) {
+      console.error(requestError);
+    }
+
+
+    const request =
+      requests &&
+      requests.length
+        ? requests[0]
+        : null;
+
+
+    if (
+      request &&
+      request.status === "pending" &&
+      request.receiver_id === currentUser.id
+    ) {
+
+      $("searchResult").innerHTML =
+        `<div class="message warning">
+          <strong>${escapeHtml(user.username)}</strong>
+          <br>
+          👥 ამ მომხმარებელმა უკვე გამოგიგზავნა მოთხოვნა.
+          <br>
+          <button id="acceptSearchBtn" class="success-btn">
+            ✓ დამატება
+          </button>
+          <button id="rejectSearchBtn" class="danger">
+            უარყოფა
+          </button>
+        </div>`;
+
+
+      $("acceptSearchBtn")
+        .addEventListener(
+          "click",
+          function() {
+
+            acceptFriendRequest(
+              request.id
+            );
+
+          }
+        );
+
+
+      $("rejectSearchBtn")
+        .addEventListener(
+          "click",
+          function() {
+
+            rejectFriendRequest(
+              request.id
+            );
+
+          }
+        );
+
+      return;
+
+    }
+
+
+    if (
+      request &&
+      request.status === "pending" &&
+      request.sender_id === currentUser.id
+    ) {
+
+      $("searchResult").innerHTML =
+        `<div class="message warning">
+          <strong>${escapeHtml(user.username)}</strong>
+          <br>
+          ⏳ მეგობრობის მოთხოვნა უკვე გაგზავნილია.
+          <br>
+          <button id="openPendingChatBtn">
+            💬 ჩატის გახსნა
+          </button>
+        </div>`;
+
+
+      $("openPendingChatBtn")
+        .addEventListener(
+          "click",
+          function() {
+
+            selectUser({
+              id: user.id,
+              username: user.username
+            });
+
+          }
+        );
+
+      return;
+
+    }
+
+
+    $("searchResult").innerHTML =
+      `<div class="message">
+        <strong>${escapeHtml(user.username)}</strong>
+        <br>
+        <button id="addFriendBtn" class="success-btn">
+          👥 დამატება
+        </button>
+        <button id="startChatBtn">
+          💬 ჩატის დაწყება
+        </button>
+      </div>`;
+
+
+    $("addFriendBtn")
+      .addEventListener(
+        "click",
+        function() {
+
+          sendFriendRequest(user);
+
+        }
+      );
+
+
+    $("startChatBtn")
+      .addEventListener(
         "click",
         function() {
 
@@ -1752,15 +2103,486 @@
         }
       );
 
+  }
+
+
+  /* =========================================================
+     SEND FRIEND REQUEST
+  ========================================================= */
+
+  async function sendFriendRequest(user) {
+
+    if (!currentUser) {
+      return;
+    }
+
+
+    try {
+
+      /*
+       * ჯერ ვამოწმებთ უკვე არსებულ მეგობრობას.
+       */
+
+      const {
+        data: friendship,
+        error: friendshipError
+      } =
+        await supabaseClient
+          .from("friendships")
+          .select("id")
+          .or(
+            `and(user_id.eq.${currentUser.id},friend_id.eq.${user.id}),and(user_id.eq.${user.id},friend_id.eq.${currentUser.id})`
+          )
+          .limit(1);
+
+
+      if (friendshipError) {
+        throw friendshipError;
+      }
+
+
+      if (
+        friendship &&
+        friendship.length
+      ) {
+
+        alert(
+          "ეს მომხმარებელი უკვე შენი მეგობარია."
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * ვამოწმებთ მოთხოვნას.
+       */
+
+      const {
+        data: existingRequests,
+        error: requestCheckError
+      } =
+        await supabaseClient
+          .from("friend_requests")
+          .select(
+            "id,sender_id,receiver_id,status"
+          )
+          .or(
+            `and(sender_id.eq.${currentUser.id},receiver_id.eq.${user.id}),and(sender_id.eq.${user.id},receiver_id.eq.${currentUser.id})`
+          )
+          .eq(
+            "status",
+            "pending"
+          )
+          .limit(1);
+
+
+      if (requestCheckError) {
+        throw requestCheckError;
+      }
+
+
+      if (
+        existingRequests &&
+        existingRequests.length > 0
+      ) {
+
+        const existing =
+          existingRequests[0];
+
+
+        /*
+         * თუ მეორე მხარემ უკვე გამოგზავნა მოთხოვნა,
+         * პირდაპირ ვადასტურებთ.
+         */
+
+        if (
+          existing.receiver_id === currentUser.id
+        ) {
+
+          const accepted =
+            await acceptFriendRequest(
+              existing.id
+            );
+
+          if (accepted) {
+
+            alert(
+              "მეგობრობა დადასტურდა."
+            );
+
+          }
+
+          return;
+
+        }
+
+
+        alert(
+          "მეგობრობის მოთხოვნა უკვე გაგზავნილია."
+        );
+
+        return;
+
+      }
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("friend_requests")
+          .insert({
+
+            sender_id:
+              currentUser.id,
+
+            receiver_id:
+              user.id,
+
+            status:
+              "pending"
+
+          });
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      $("searchResult").innerHTML =
+        `<div class="message success">
+          <strong>${escapeHtml(user.username)}</strong>
+          <br>
+          ✓ მეგობრობის მოთხოვნა გაიგზავნა.
+          <br>
+          ახლა შეგიძლია გაუგზავნო პირველი შეტყობინება.
+        </div>`;
+
 
     } catch (error) {
 
       console.error(error);
 
-      $("searchResult").innerHTML =
-        `<div class="message error">
-           ${escapeHtml(error.message)}
-         </div>`;
+      alert(
+        "მეგობრობის მოთხოვნის გაგზავნა ვერ მოხერხდა: " +
+        error.message
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     LOAD FRIEND REQUESTS
+  ========================================================= */
+
+  async function loadFriendRequests() {
+
+    if (!currentUser) {
+      return;
+    }
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("friend_requests")
+        .select(
+          "id,sender_id,receiver_id,status,created_at"
+        )
+        .eq(
+          "receiver_id",
+          currentUser.id
+        )
+        .eq(
+          "status",
+          "pending"
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
+
+    if (error) {
+
+      console.error(
+        "Friend request error:",
+        error
+      );
+
+      return;
+
+    }
+
+
+    const list =
+      $("friendRequestsList");
+
+    const badge =
+      $("requestBadge");
+
+
+    list.innerHTML = "";
+
+
+    if (
+      !data ||
+      data.length === 0
+    ) {
+
+      badge.innerHTML = "";
+
+      list.innerHTML =
+        `<div class="message">
+          მოთხოვნები არ არის.
+        </div>`;
+
+      return;
+
+    }
+
+
+    badge.innerHTML =
+      `<span class="badge">${data.length}</span>`;
+
+
+    for (
+      const request of data
+    ) {
+
+      let username =
+        "მომხმარებელი";
+
+
+      try {
+
+        const {
+          data: profile
+        } =
+          await supabaseClient.rpc(
+            "find_profile_by_id",
+            {
+              profile_id:
+                request.sender_id
+            }
+          );
+
+
+        if (
+          profile &&
+          profile.length
+        ) {
+
+          username =
+            profile[0].username;
+
+        }
+
+      } catch (error) {
+
+        console.error(error);
+
+      }
+
+
+      const item =
+        document.createElement("div");
+
+      item.className =
+        "request-item";
+
+
+      item.innerHTML =
+        `<strong>
+          👤 ${escapeHtml(username)}
+        </strong>
+        <div>
+          გიგზავნის მეგობრობის მოთხოვნას.
+        </div>
+        <div class="request-actions">
+          <button class="success-btn accept-request-btn">
+            ✓ მიღება
+          </button>
+          <button class="danger reject-request-btn">
+            ✕ უარყოფა
+          </button>
+          <button class="secondary open-request-chat-btn">
+            💬 ჩატი
+          </button>
+        </div>`;
+
+
+      item
+        .querySelector(
+          ".accept-request-btn"
+        )
+        .addEventListener(
+          "click",
+          function() {
+
+            acceptFriendRequest(
+              request.id
+            );
+
+          }
+        );
+
+
+      item
+        .querySelector(
+          ".reject-request-btn"
+        )
+        .addEventListener(
+          "click",
+          function() {
+
+            rejectFriendRequest(
+              request.id
+            );
+
+          }
+        );
+
+
+      item
+        .querySelector(
+          ".open-request-chat-btn"
+        )
+        .addEventListener(
+          "click",
+          function() {
+
+            selectUser({
+              id:
+                request.sender_id,
+
+              username:
+                username
+            });
+
+          }
+        );
+
+
+      list.appendChild(item);
+
+    }
+
+  }
+
+
+  /* =========================================================
+     ACCEPT FRIEND REQUEST
+  ========================================================= */
+
+  async function acceptFriendRequest(
+    requestId
+  ) {
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.rpc(
+          "accept_friend_request",
+          {
+            request_id:
+              requestId
+          }
+        );
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      if (data === false) {
+
+        throw new Error(
+          "მეგობრობის მოთხოვნა ვერ მოიძებნა ან უკვე დამუშავებულია."
+        );
+
+      }
+
+
+      await loadFriendRequests();
+
+      await loadConversations();
+
+
+      alert(
+        "✓ მეგობრობა დადასტურდა."
+      );
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "მეგობრობის დადასტურება ვერ მოხერხდა: " +
+        error.message
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     REJECT FRIEND REQUEST
+  ========================================================= */
+
+  async function rejectFriendRequest(
+    requestId
+  ) {
+
+    try {
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("friend_requests")
+          .delete()
+          .eq(
+            "id",
+            requestId
+          )
+          .eq(
+            "receiver_id",
+            currentUser.id
+          );
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      await loadFriendRequests();
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "მოთხოვნის უარყოფა ვერ მოხერხდა: " +
+        error.message
+      );
 
     }
 
@@ -1771,7 +2593,7 @@
      SELECT CHAT USER
   ========================================================= */
 
-  function selectUser(user) {
+  async function selectUser(user) {
 
     selectedUser = user;
 
@@ -1787,23 +2609,13 @@
       false;
 
 
-    loadMessages();
+    $("chatHeaderInfo").textContent =
+      "შეგიძლია გაუგზავნო შეტყობინება მეგობრობის დადასტურებამდე.";
 
 
-    document
-      .querySelectorAll(".conversation")
-      .forEach(
-        function(element) {
+    await loadMessages();
 
-          element.classList.remove(
-            "active"
-          );
-
-        }
-      );
-
-
-    loadConversations();
+    await loadConversations();
 
   }
 
@@ -1826,7 +2638,7 @@
       await supabaseClient
         .from("messages")
         .select(
-          "sender_id, receiver_id, created_at"
+          "id,sender_id,receiver_id,message,created_at,read_at"
         )
         .or(
           `sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`
@@ -1851,7 +2663,8 @@
     }
 
 
-    const ids = [];
+    const map =
+      new Map();
 
 
     for (
@@ -1865,11 +2678,25 @@
 
 
       if (
-        otherId !== currentUser.id &&
-        !ids.includes(otherId)
+        otherId === currentUser.id
       ) {
+        continue;
+      }
 
-        ids.push(otherId);
+
+      if (!map.has(otherId)) {
+
+        map.set(
+          otherId,
+          {
+            lastMessage:
+              message,
+
+            unread:
+              message.receiver_id === currentUser.id &&
+              !message.read_at
+          }
+        );
 
       }
 
@@ -1879,27 +2706,24 @@
     $("conversationList").innerHTML = "";
 
 
-    if (ids.length === 0) {
+    if (map.size === 0) {
 
       $("conversationList").innerHTML =
         `<div class="message">
-           ჯერ ჩატი არ გაქვს.
-         </div>`;
+          ჯერ ჩატი არ გაქვს.
+        </div>`;
 
       return;
 
     }
 
 
-    /*
-     * არსებული profiles RLS-ით სხვა მომხმარებლების
-     * პირდაპირ წაკითხვა არ შეიძლება.
-     *
-     * ამიტომ თითოეულ username-ს ვიღებთ
-     * უსაფრთხო RPC-ით.
-     */
-
-    for (const id of ids) {
+    for (
+      const [
+        id,
+        info
+      ] of map
+    ) {
 
       try {
 
@@ -1920,9 +2744,7 @@
           !data ||
           data.length === 0
         ) {
-
           continue;
-
         }
 
 
@@ -1932,6 +2754,7 @@
 
         const div =
           document.createElement("div");
+
 
         div.className =
           "conversation";
@@ -1949,8 +2772,31 @@
         }
 
 
-        div.textContent =
-          "👤 " + profile.username;
+        if (info.unread) {
+
+          div.classList.add(
+            "unread"
+          );
+
+        }
+
+
+        const unreadText =
+          info.unread
+            ? "🔴 ახალი შეტყობინება"
+            : "";
+
+
+        div.innerHTML =
+          `👤 ${escapeHtml(profile.username)}
+           ${
+             info.unread
+               ? `<span class="badge">ახალი</span>`
+               : ""
+           }
+           <small>
+             ${unreadText}
+           </small>`;
 
 
         div.addEventListener(
@@ -1958,8 +2804,11 @@
           function() {
 
             selectUser({
-              id: profile.id,
-              username: profile.username
+              id:
+                profile.id,
+
+              username:
+                profile.username
             });
 
           }
@@ -1999,8 +2848,8 @@
 
     $("chatMessages").innerHTML =
       `<div class="loading">
-         შეტყობინებები იტვირთება...
-       </div>`;
+        შეტყობინებები იტვირთება...
+      </div>`;
 
 
     const {
@@ -2010,7 +2859,7 @@
       await supabaseClient
         .from("messages")
         .select(
-          "id, sender_id, receiver_id, message, created_at"
+          "id,sender_id,receiver_id,message,created_at,read_at"
         )
         .or(
           `and(sender_id.eq.${currentUser.id},receiver_id.eq.${selectedUser.id}),and(sender_id.eq.${selectedUser.id},receiver_id.eq.${currentUser.id})`
@@ -2025,19 +2874,76 @@
 
     if (error) {
 
-      console.error(error);
+      console.error(
+        "Load messages error:",
+        error
+      );
 
       $("chatMessages").innerHTML =
         `<div class="message error">
-           შეტყობინებების ჩატვირთვა ვერ მოხერხდა.
-         </div>`;
+          შეტყობინებების ჩატვირთვა ვერ მოხერხდა.
+        </div>`;
 
       return;
 
     }
 
 
-    renderMessages(data || []);
+    renderMessages(
+      data || []
+    );
+
+
+    /*
+     * შემომავალი unread მესიჯების წაკითხვა.
+     */
+
+    const unread =
+      (data || [])
+        .filter(
+          function(message) {
+
+            return (
+              message.receiver_id ===
+              currentUser.id &&
+              !message.read_at
+            );
+
+          }
+        );
+
+
+    for (
+      const message of unread
+    ) {
+
+      try {
+
+        await supabaseClient.rpc(
+          "mark_message_read",
+          {
+            message_id:
+              message.id
+          }
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Read error:",
+          error
+        );
+
+      }
+
+    }
+
+
+    if (unread.length > 0) {
+
+      await loadConversations();
+
+    }
 
   }
 
@@ -2055,9 +2961,9 @@
 
       container.innerHTML =
         `<div class="chat-empty">
-           ჯერ შეტყობინება არ არის.<br>
-           დაწერე პირველი შეტყობინება.
-         </div>`;
+          ჯერ შეტყობინება არ არის.<br>
+          დაწერე პირველი შეტყობინება.
+        </div>`;
 
       return;
 
@@ -2076,6 +2982,7 @@
       const row =
         document.createElement("div");
 
+
       row.className =
         "bubble-row" +
         (
@@ -2088,22 +2995,47 @@
       const bubble =
         document.createElement("div");
 
+
       bubble.className =
         "bubble";
 
 
+      const readText =
+        mine
+          ? (
+              message.read_at
+                ? "✓ წაკითხულია"
+                : "✓ გაგზავნილია"
+            )
+          : "";
+
+
       bubble.innerHTML =
         `<div>
-           ${escapeHtml(message.message)}
-         </div>
-         <div class="bubble-time">
-           ${formatDate(message.created_at)}
-         </div>`;
+          ${escapeHtml(message.message)}
+        </div>
+
+        <div class="bubble-time">
+          ${formatDate(message.created_at)}
+        </div>
+
+        ${
+          readText
+            ? `<div class="bubble-read">
+                ${readText}
+               </div>`
+            : ""
+        }`;
 
 
-      row.appendChild(bubble);
+      row.appendChild(
+        bubble
+      );
 
-      container.appendChild(row);
+
+      container.appendChild(
+        row
+      );
 
     }
 
@@ -2118,29 +3050,31 @@
      SEND MESSAGE
   ========================================================= */
 
-  $("sendMessageBtn").addEventListener(
-    "click",
-    sendMessage
-  );
+  $("sendMessageBtn")
+    .addEventListener(
+      "click",
+      sendMessage
+    );
 
 
-  $("messageInput").addEventListener(
-    "keydown",
-    function(event) {
+  $("messageInput")
+    .addEventListener(
+      "keydown",
+      function(event) {
 
-      if (
-        event.key === "Enter" &&
-        !event.shiftKey
-      ) {
+        if (
+          event.key === "Enter" &&
+          !event.shiftKey
+        ) {
 
-        event.preventDefault();
+          event.preventDefault();
 
-        sendMessage();
+          sendMessage();
+
+        }
 
       }
-
-    }
-  );
+    );
 
 
   async function sendMessage() {
@@ -2180,6 +3114,7 @@
         await supabaseClient
           .from("messages")
           .insert({
+
             sender_id:
               currentUser.id,
 
@@ -2188,6 +3123,7 @@
 
             message:
               text
+
           });
 
 
@@ -2226,7 +3162,7 @@
 
 
   /* =========================================================
-     REALTIME CHAT
+     REALTIME MESSAGES
   ========================================================= */
 
   function setupRealtime() {
@@ -2245,7 +3181,9 @@
       supabaseClient
         .channel(
           "messages-" +
-          currentUser.id
+          currentUser.id +
+          "-" +
+          Date.now()
         )
 
         .on(
@@ -2253,33 +3191,241 @@
           {
             event: "INSERT",
             schema: "public",
-            table: "messages",
-            filter:
-              "receiver_id=eq." +
-              currentUser.id
+            table: "messages"
           },
           async function(payload) {
 
-            const newMessage =
+            const message =
               payload.new;
 
 
             if (
-              selectedUser &&
-              (
-                newMessage.sender_id ===
-                selectedUser.id
-              )
+              message.sender_id !== currentUser.id &&
+              message.receiver_id !== currentUser.id
             ) {
 
-              await loadMessages();
+              return;
 
             }
 
 
-            await loadConversations();
+            /*
+             * შემომავალი მესიჯი.
+             */
+
+            if (
+              message.receiver_id === currentUser.id
+            ) {
+
+              await loadConversations();
+
+
+              if (
+                selectedUser &&
+                selectedUser.id ===
+                message.sender_id
+              ) {
+
+                await loadMessages();
+
+              } else {
+
+                await showIncomingMessage(
+                  message
+                );
+
+              }
+
+            }
+
+
+            /*
+             * საკუთარი გაგზავნილი მესიჯი.
+             */
+
+            if (
+              message.sender_id === currentUser.id
+            ) {
+
+              if (
+                selectedUser &&
+                selectedUser.id ===
+                message.receiver_id
+              ) {
+
+                await loadMessages();
+
+              }
+
+              await loadConversations();
+
+            }
 
           }
+        )
+
+        .subscribe(
+          function(status) {
+
+            console.log(
+              "Messages Realtime:",
+              status
+            );
+
+          }
+        );
+
+
+    /*
+     * დამატებითი fallback.
+     */
+
+    if (messageRefreshTimer) {
+
+      clearInterval(
+        messageRefreshTimer
+      );
+
+    }
+
+
+    messageRefreshTimer =
+      setInterval(
+        async function() {
+
+          if (!currentUser) {
+            return;
+          }
+
+
+          await loadConversations();
+
+
+          if (selectedUser) {
+
+            await loadMessages();
+
+          }
+
+
+          await loadFriendRequests();
+
+        },
+        3000
+      );
+
+  }
+
+
+  /* =========================================================
+     INCOMING MESSAGE NOTICE
+  ========================================================= */
+
+  async function showIncomingMessage(
+    message
+  ) {
+
+    let username =
+      "მომხმარებელი";
+
+
+    try {
+
+      const {
+        data
+      } =
+        await supabaseClient.rpc(
+          "find_profile_by_id",
+          {
+            profile_id:
+              message.sender_id
+          }
+        );
+
+
+      if (
+        data &&
+        data.length
+      ) {
+
+        username =
+          data[0].username;
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+
+    $("incomingNotice").innerHTML =
+      `<div
+        id="incomingMessageNotice"
+        class="incoming-notice"
+      >
+        💬 <strong>ახალი შეტყობინება</strong>
+        <br>
+        👤 ${escapeHtml(username)}
+        <br>
+        <small>
+          ${escapeHtml(message.message)}
+        </small>
+        <br>
+        <button class="secondary">
+          ჩატის გახსნა
+        </button>
+      </div>`;
+
+
+    $("incomingMessageNotice")
+      .querySelector("button")
+      .addEventListener(
+        "click",
+        function() {
+
+          selectUser({
+            id:
+              message.sender_id,
+
+            username:
+              username
+          });
+
+
+          $("incomingNotice")
+            .innerHTML = "";
+
+        }
+      );
+
+  }
+
+
+  /* =========================================================
+     REALTIME FRIEND REQUESTS
+  ========================================================= */
+
+  function setupFriendRealtime() {
+
+    if (friendChannel) {
+
+      supabaseClient
+        .removeChannel(
+          friendChannel
+        );
+
+    }
+
+
+    friendChannel =
+      supabaseClient
+        .channel(
+          "friends-" +
+          currentUser.id +
+          "-" +
+          Date.now()
         )
 
         .on(
@@ -2287,27 +3433,57 @@
           {
             event: "INSERT",
             schema: "public",
-            table: "messages",
-            filter:
-              "sender_id=eq." +
-              currentUser.id
+            table: "friend_requests"
           },
           async function(payload) {
 
             if (
-              selectedUser &&
               payload.new.receiver_id ===
-              selectedUser.id
+              currentUser.id
             ) {
 
-              await loadMessages();
+              await loadFriendRequests();
 
             }
 
           }
         )
 
-        .subscribe();
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "friend_requests"
+          },
+          async function(payload) {
+
+            if (
+              payload.new.receiver_id ===
+              currentUser.id ||
+              payload.new.sender_id ===
+              currentUser.id
+            ) {
+
+              await loadFriendRequests();
+
+              await loadConversations();
+
+            }
+
+          }
+        )
+
+        .subscribe(
+          function(status) {
+
+            console.log(
+              "Friend Realtime:",
+              status
+            );
+
+          }
+        );
 
   }
 
@@ -2316,82 +3492,87 @@
      FILE UPLOAD
   ========================================================= */
 
-  $("chooseFileBtn").addEventListener(
-    "click",
-    function() {
+  $("chooseFileBtn")
+    .addEventListener(
+      "click",
+      function() {
 
-      $("fileInput").click();
+        $("fileInput").click();
 
-    }
-  );
+      }
+    );
 
 
-  $("fileInput").addEventListener(
-    "change",
-    function(event) {
+  $("fileInput")
+    .addEventListener(
+      "change",
+      function(event) {
 
-      const files =
-        Array.from(
-          event.target.files
-        );
+        const files =
+          Array.from(
+            event.target.files
+          );
 
-      uploadFiles(files);
+        uploadFiles(files);
 
-    }
-  );
+      }
+    );
 
 
   const uploadArea =
     $("uploadArea");
 
 
-  uploadArea.addEventListener(
-    "dragover",
-    function(event) {
+  uploadArea
+    .addEventListener(
+      "dragover",
+      function(event) {
 
-      event.preventDefault();
+        event.preventDefault();
 
-      uploadArea.classList.add(
-        "dragover"
-      );
+        uploadArea.classList.add(
+          "dragover"
+        );
 
-    }
-  );
-
-
-  uploadArea.addEventListener(
-    "dragleave",
-    function() {
-
-      uploadArea.classList.remove(
-        "dragover"
-      );
-
-    }
-  );
+      }
+    );
 
 
-  uploadArea.addEventListener(
-    "drop",
-    function(event) {
+  uploadArea
+    .addEventListener(
+      "dragleave",
+      function() {
 
-      event.preventDefault();
+        uploadArea.classList.remove(
+          "dragover"
+        );
 
-      uploadArea.classList.remove(
-        "dragover"
-      );
+      }
+    );
 
 
-      const files =
-        Array.from(
-          event.dataTransfer.files
+  uploadArea
+    .addEventListener(
+      "drop",
+      function(event) {
+
+        event.preventDefault();
+
+        uploadArea.classList.remove(
+          "dragover"
         );
 
 
-      uploadFiles(files);
+        const files =
+          Array.from(
+            event.dataTransfer.files
+          );
 
-    }
-  );
+
+        uploadFiles(files);
+
+      }
+    );
 
 
   async function uploadFiles(files) {
@@ -2410,13 +3591,11 @@
     $("uploadMessage").innerHTML = "";
 
 
-    for (const file of files) {
+    for (
+      const file of files
+    ) {
 
       try {
-
-        /*
-         * 50 MB.
-         */
 
         const MAX_SIZE =
           50 * 1024 * 1024;
@@ -2437,17 +3616,9 @@
         }
 
 
-        /*
-         * უნიკალური ID ფაილისთვის.
-         */
-
         const fileId =
           crypto.randomUUID();
 
-
-        /*
-         * უსაფრთხო სახელი.
-         */
 
         const safeName =
           file.name
@@ -2464,10 +3635,6 @@
           "-" +
           safeName;
 
-
-        /*
-         * Storage upload.
-         */
 
         const {
           error: uploadError
@@ -2492,20 +3659,12 @@
         }
 
 
-        /*
-         * 3 დღის შემდეგ.
-         */
-
         const expiresAt =
           new Date(
             Date.now() +
             3 * 24 * 60 * 60 * 1000
           ).toISOString();
 
-
-        /*
-         * Database record.
-         */
 
         const {
           error: dbError
@@ -2514,7 +3673,8 @@
             .from("files")
             .insert({
 
-              id: fileId,
+              id:
+                fileId,
 
               user_id:
                 currentUser.id,
@@ -2539,11 +3699,6 @@
 
 
         if (dbError) {
-
-          /*
-           * თუ DB insert ჩავარდა,
-           * Storage-იდანაც ვშლით.
-           */
 
           await supabaseClient
             .storage
@@ -2599,8 +3754,8 @@
 
     $("fileList").innerHTML =
       `<div class="loading">
-         ფაილები იტვირთება...
-       </div>`;
+        ფაილები იტვირთება...
+      </div>`;
 
 
     const {
@@ -2610,7 +3765,7 @@
       await supabaseClient
         .from("files")
         .select(
-          "id, file_name, storage_path, file_type, file_size, created_at, expires_at"
+          "id,file_name,storage_path,file_type,file_size,created_at,expires_at"
         )
         .eq(
           "user_id",
@@ -2630,8 +3785,8 @@
 
       $("fileList").innerHTML =
         `<div class="message error">
-           ფაილების ჩატვირთვა ვერ მოხერხდა.
-         </div>`;
+          ფაილების ჩატვირთვა ვერ მოხერხდა.
+        </div>`;
 
       return;
 
@@ -2641,12 +3796,15 @@
     $("fileList").innerHTML = "";
 
 
-    if (!data || !data.length) {
+    if (
+      !data ||
+      !data.length
+    ) {
 
       $("fileList").innerHTML =
         `<div class="message">
-           ჯერ ფაილი არ აგიტვირთავს.
-         </div>`;
+          ჯერ ფაილი არ აგიტვირთავს.
+        </div>`;
 
       return;
 
@@ -2673,23 +3831,24 @@
 
       info.innerHTML =
         `<div class="file-name">
-           ${escapeHtml(file.file_name)}
-         </div>
+          ${escapeHtml(file.file_name)}
+        </div>
 
-         <div class="file-meta">
-           ატვირთული:
-           ${formatDate(file.created_at)}
-           <br>
-           იშლება:
-           ${formatDate(file.expires_at)}
-           <br>
-           ზომა:
-           ${formatBytes(file.file_size)}
-         </div>`;
+        <div class="file-meta">
+          ატვირთული:
+          ${formatDate(file.created_at)}
+          <br>
+          იშლება:
+          ${formatDate(file.expires_at)}
+          <br>
+          ზომა:
+          ${formatBytes(file.file_size)}
+        </div>`;
 
 
       const actions =
         document.createElement("div");
+
 
       actions.className =
         "file-actions";
@@ -2697,6 +3856,7 @@
 
       const openBtn =
         document.createElement("button");
+
 
       openBtn.textContent =
         "ნახვა / გახსნა";
@@ -2715,8 +3875,10 @@
       const deleteBtn =
         document.createElement("button");
 
+
       deleteBtn.textContent =
         "წაშლა";
+
 
       deleteBtn.className =
         "danger";
@@ -2832,10 +3994,6 @@
 
     try {
 
-      /*
-       * Storage.
-       */
-
       const {
         error: storageError
       } =
@@ -2851,10 +4009,6 @@
         throw storageError;
       }
 
-
-      /*
-       * Database.
-       */
 
       const {
         error: dbError
@@ -2895,7 +4049,7 @@
 
 
   /* =========================================================
-     START
+     START APP
   ========================================================= */
 
   async function startApp() {
@@ -2939,3 +4093,4 @@
 
 </body>
 </html>
+```
