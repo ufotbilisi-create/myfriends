@@ -1,672 +1,540 @@
-```html
 <!DOCTYPE html>
 <html lang="ka">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>👥 Friends</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      color: #222;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .container {
-      width: min(1100px, 94%);
-      margin: 25px auto;
-    }
-
-    header {
-      background: #fff;
-      border-radius: 16px;
-      padding: 18px 22px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 3px 15px rgba(0,0,0,.08);
-      margin-bottom: 20px;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 25px;
-    }
-
-    .header-user {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 3px 15px rgba(0,0,0,.08);
-      margin-bottom: 20px;
-    }
-
-    h2 {
-      margin-top: 0;
-    }
-
-    h3 {
-      margin-top: 0;
-    }
-
-    input {
-      width: 100%;
-      padding: 13px 14px;
-      border: 1px solid #d5d9de;
-      border-radius: 10px;
-      outline: none;
-      margin-bottom: 12px;
-      background: #fff;
-    }
-
-    input:focus {
-      border-color: #777;
-    }
-
-    button {
-      border: 0;
-      border-radius: 10px;
-      padding: 12px 17px;
-      background: #222;
-      color: #fff;
-      margin: 3px;
-    }
-
-    button:hover {
-      opacity: .9;
-    }
-
-    button.secondary {
-      background: #e9edf1;
-      color: #222;
-    }
-
-    button.danger {
-      background: #c62828;
-    }
-
-    button.success-btn {
-      background: #2e7d32;
-    }
-
-    button.warning-btn {
-      background: #ef6c00;
-    }
-
-    button.link-btn {
-      background: transparent;
-      color: #333;
-      padding: 5px;
-      text-decoration: underline;
-    }
-
-    .auth-buttons {
-      display: flex;
-      gap: 5px;
-      margin-bottom: 15px;
-    }
-
-    .auth-form {
-      max-width: 430px;
-      margin: auto;
-    }
-
-    .auth-form p {
-      color: #666;
-      line-height: 1.5;
-    }
-
-    .message {
-      padding: 12px;
-      border-radius: 10px;
-      margin: 10px 0;
-      background: #eef1f4;
-    }
-
-    .message.success {
-      background: #e8f5e9;
-      color: #1b5e20;
-    }
-
-    .message.error {
-      background: #ffebee;
-      color: #b71c1c;
-    }
-
-    .message.warning {
-      background: #fff8e1;
-      color: #6d5200;
-    }
-
-    .app-grid {
-      display: grid;
-      grid-template-columns: 290px 1fr;
-      gap: 20px;
-    }
-
-    .sidebar {
-      min-height: 500px;
-    }
-
-    .user-search {
-      display: flex;
-      gap: 5px;
-    }
-
-    .user-search input {
-      margin: 0;
-    }
-
-    .conversation-list {
-      margin-top: 15px;
-    }
-
-    .conversation {
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 7px;
-      background: #f2f4f6;
-      cursor: pointer;
-    }
-
-    .conversation:hover {
-      background: #e6e9ec;
-    }
-
-    .conversation.active {
-      background: #dfe3e7;
-      font-weight: bold;
-    }
-
-    .conversation.unread {
-      font-weight: bold;
-      border: 2px solid #222;
-    }
-
-    .conversation small {
-      display: block;
-      margin-top: 5px;
-      color: #777;
-      font-weight: normal;
-    }
-
-    .chat-card {
-      min-height: 500px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .chat-header {
-      padding-bottom: 15px;
-      border-bottom: 1px solid #ddd;
-      margin-bottom: 15px;
-    }
-
-    .chat-header h3 {
-      margin: 0;
-    }
-
-    .chat-header-info {
-      margin-top: 8px;
-      color: #666;
-      font-size: 13px;
-    }
-
-    .chat-messages {
-      flex: 1;
-      height: 390px;
-      overflow-y: auto;
-      padding: 10px;
-      background: #f7f8fa;
-      border-radius: 12px;
-      margin-bottom: 12px;
-    }
-
-    .chat-empty {
-      text-align: center;
-      color: #777;
-      padding-top: 80px;
-    }
-
-    .bubble-row {
-      display: flex;
-      margin: 7px 0;
-    }
-
-    .bubble-row.mine {
-      justify-content: flex-end;
-    }
-
-    .bubble {
-      max-width: 75%;
-      padding: 10px 13px;
-      border-radius: 14px;
-      background: #e1e5e9;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .bubble-row.mine .bubble {
-      background: #222;
-      color: white;
-    }
-
-    .bubble-time {
-      font-size: 10px;
-      opacity: .6;
-      margin-top: 4px;
-    }
-
-    .bubble-read {
-      font-size: 10px;
-      opacity: .65;
-      margin-top: 3px;
-    }
-
-    .send-box {
-      display: flex;
-      gap: 7px;
-    }
-
-    .send-box input {
-      margin: 0;
-    }
-
-    .request-item {
-      background: #f2f4f6;
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 8px;
-    }
-
-    .request-actions {
-      margin-top: 8px;
-    }
-
-    .incoming-notice {
-      background: #e8f5e9;
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 12px;
-      cursor: pointer;
-    }
-
-    .incoming-notice:hover {
-      background: #dff0e1;
-    }
-
-    .upload-area {
-      border: 2px dashed #b7bdc4;
-      border-radius: 14px;
-      padding: 35px 20px;
-      text-align: center;
-      background: #fafbfc;
-      transition: .2s;
-    }
-
-    .upload-area.dragover {
-      background: #eef1f4;
-      border-color: #555;
-    }
-
-    .file-list {
-      margin-top: 20px;
-    }
-
-    .file-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      padding: 13px;
-      border: 1px solid #e0e3e6;
-      border-radius: 10px;
-      margin-bottom: 8px;
-    }
-
-    .file-info {
-      min-width: 0;
-    }
-
-    .file-name {
-      font-weight: bold;
-      word-break: break-word;
-    }
-
-    .file-meta {
-      font-size: 12px;
-      color: #777;
-      margin-top: 4px;
-    }
-
-    .file-actions {
-      flex-shrink: 0;
-    }
-
-    .notice {
-      background: #fff8e1;
-      border-radius: 10px;
-      padding: 12px;
-      margin-top: 10px;
-      color: #6d5200;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #777;
-    }
-
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .badge {
-      display: inline-block;
-      min-width: 20px;
-      padding: 3px 7px;
-      border-radius: 20px;
-      background: #c62828;
-      color: white;
-      font-size: 11px;
-      text-align: center;
-    }
-
-    @media (max-width: 750px) {
-      .container {
-        width: 96%;
-        margin: 12px auto;
-      }
-
-      header {
-        padding: 14px;
-      }
-
-      header h1 {
-        font-size: 20px;
-      }
-
-      .app-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .sidebar {
-        min-height: auto;
-      }
-
-      .chat-card {
-        min-height: 500px;
-      }
-
-      .file-item {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .file-actions {
-        width: 100%;
-      }
-
-      .file-actions button {
-        width: 100%;
-      }
-
-      .send-box {
-        flex-direction: column;
-      }
-
-      .send-box button {
-        width: 100%;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Friends</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+  color: #222;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.container {
+  width: min(1100px, 94%);
+  margin: 20px auto;
+}
+
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 3px 15px rgba(0,0,0,.08);
+}
+
+h1,
+h2,
+h3 {
+  margin-top: 0;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+  margin-bottom: 10px;
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #6366f1;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+button {
+  border: 0;
+  border-radius: 9px;
+  padding: 10px 15px;
+  margin: 3px;
+  background: #4f46e5;
+  color: white;
+}
+
+button:hover {
+  opacity: .9;
+}
+
+.success-btn {
+  background: #16a34a;
+}
+
+.danger-btn {
+  background: #dc2626;
+}
+
+.secondary-btn {
+  background: #6b7280;
+}
+
+.warning-btn {
+  background: #d97706;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.message {
+  padding: 12px;
+  background: #f3f4f6;
+  border-radius: 10px;
+  margin: 7px 0;
+}
+
+.error {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.success {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.loading {
+  padding: 15px;
+  text-align: center;
+}
+
+.small {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.username {
+  font-weight: bold;
+  color: #4f46e5;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.auth-tabs button {
+  flex: 1;
+}
+
+.auth-tabs .active {
+  background: #111827;
+}
+
+.app-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 16px;
+}
+
+.sidebar {
+  min-width: 0;
+}
+
+.chat-area {
+  min-width: 0;
+}
+
+.user-result {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.user-result strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.request-item,
+.conversation-item {
+  border: 1px solid #e5e7eb;
+  padding: 11px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.conversation-item {
+  cursor: pointer;
+}
+
+.conversation-item:hover {
+  background: #f9fafb;
+}
+
+.conversation-item.active {
+  background: #eef2ff;
+  border-color: #6366f1;
+}
+
+.unread {
+  font-weight: bold;
+  border-color: #f59e0b;
+}
+
+.badge {
+  display: inline-block;
+  background: #dc2626;
+  color: white;
+  border-radius: 20px;
+  padding: 2px 7px;
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+.chat-header {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.messages {
+  height: 450px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fafafa;
+}
+
+.chat-message {
+  display: flex;
+  margin: 8px 0;
+}
+
+.chat-message.mine {
+  justify-content: flex-end;
+}
+
+.bubble {
+  max-width: 75%;
+  padding: 10px 13px;
+  border-radius: 14px;
+  background: #e5e7eb;
+  word-break: break-word;
+}
+
+.mine .bubble {
+  background: #4f46e5;
+  color: white;
+}
+
+.message-time {
+  font-size: 10px;
+  opacity: .65;
+  margin-top: 4px;
+}
+
+.send-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.send-row textarea {
+  margin: 0;
+  min-height: 55px;
+}
+
+.send-row button {
+  width: 110px;
+}
+
+.file-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 750px) {
+
+  .container {
+    width: 96%;
+    margin: 10px auto;
+  }
+
+  .app-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .messages {
+    height: 55vh;
+  }
+
+  .send-row {
+    align-items: stretch;
+  }
+
+  .send-row button {
+    width: 90px;
+  }
+
+  .bubble {
+    max-width: 85%;
+  }
+}
+
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <header>
+  <!-- =====================================================
+       AUTH
+  ====================================================== -->
+
+  <div id="authScreen" class="card">
+
     <h1>👥 Friends</h1>
 
-    <div id="headerUser" class="header-user hidden">
-      <span id="headerUsername"></span>
-      <button id="logoutBtn">გასვლა</button>
+    <div class="auth-tabs">
+      <button id="loginTab" class="active">
+        შესვლა
+      </button>
+
+      <button id="registerTab">
+        რეგისტრაცია
+      </button>
     </div>
-  </header>
 
+    <!-- LOGIN -->
 
-  <!-- AUTH -->
+    <div id="loginBox">
 
-  <section id="authSection">
+      <input
+        id="loginUsername"
+        type="text"
+        placeholder="Username"
+        autocomplete="username"
+      >
 
-    <div class="card">
+      <input
+        id="loginPassword"
+        type="password"
+        placeholder="პაროლი"
+        autocomplete="current-password"
+      >
 
-      <div class="auth-buttons">
-        <button id="showLoginBtn">შესვლა</button>
-        <button id="showRegisterBtn" class="secondary">რეგისტრაცია</button>
-      </div>
+      <button id="loginBtn">
+        შესვლა
+      </button>
 
-      <!-- LOGIN -->
+      <button
+        id="forgotBtn"
+        class="secondary-btn"
+      >
+        პაროლი დამავიწყდა
+      </button>
 
-      <div id="loginForm" class="auth-form">
-
-        <h2>შესვლა</h2>
-
-        <p>
-          შეგიძლია შეხვიდე ელფოსტით ან მომხმარებლის სახელით.
-        </p>
-
-        <input
-          id="loginIdentifier"
-          type="text"
-          placeholder="ელფოსტა ან მომხმარებლის სახელი"
-          autocomplete="username"
-        >
-
-        <input
-          id="loginPassword"
-          type="password"
-          placeholder="პაროლი"
-          autocomplete="current-password"
-        >
-
-        <button id="loginBtn">შესვლა</button>
-
-        <br>
-
-        <button id="forgotPasswordBtn" class="link-btn">
-          🔑 პაროლი დამავიწყდა
-        </button>
-
-        <div id="loginMessage"></div>
-
-      </div>
-
-
-      <!-- REGISTER -->
-
-      <div id="registerForm" class="auth-form hidden">
-
-        <h2>რეგისტრაცია</h2>
-
-        <input
-          id="registerUsername"
-          type="text"
-          placeholder="მომხმარებლის სახელი"
-          autocomplete="username"
-        >
-
-        <input
-          id="registerEmail"
-          type="email"
-          placeholder="ელფოსტა"
-          autocomplete="email"
-        >
-
-        <input
-          id="registerPassword"
-          type="password"
-          placeholder="პაროლი"
-          autocomplete="new-password"
-        >
-
-        <input
-          id="registerPassword2"
-          type="password"
-          placeholder="გაიმეორე პაროლი"
-          autocomplete="new-password"
-        >
-
-        <button id="registerBtn">ანგარიშის შექმნა</button>
-
-        <p>
-          მომხმარებლის სახელი უნდა იყოს უნიკალური.
-        </p>
-
-        <div id="registerMessage"></div>
-
-      </div>
-
-
-      <!-- FORGOT PASSWORD -->
-
-      <div id="forgotForm" class="auth-form hidden">
-
-        <h2>🔑 პაროლის აღდგენა</h2>
-
-        <p>
-          შეიყვანე ის ელფოსტა, რომლითაც ანგარიშზე დარეგისტრირდი.
-        </p>
-
-        <input
-          id="resetEmail"
-          type="email"
-          placeholder="ელფოსტა"
-          autocomplete="email"
-        >
-
-        <button id="sendResetBtn">
-          📧 აღდგენის ბმულის გაგზავნა
-        </button>
-
-        <button id="backToLoginBtn" class="secondary">
-          ← უკან შესვლა
-        </button>
-
-        <div id="resetMessage"></div>
-
-      </div>
-
-
-      <!-- UPDATE PASSWORD -->
-
-      <div id="updatePasswordForm" class="auth-form hidden">
-
-        <h2>🔐 ახალი პაროლი</h2>
-
-        <input
-          id="newPassword"
-          type="password"
-          placeholder="ახალი პაროლი"
-          autocomplete="new-password"
-        >
-
-        <input
-          id="newPassword2"
-          type="password"
-          placeholder="გაიმეორე ახალი პაროლი"
-          autocomplete="new-password"
-        >
-
-        <button id="updatePasswordBtn">
-          ახალი პაროლის შენახვა
-        </button>
-
-        <div id="updatePasswordMessage"></div>
-
-      </div>
+      <div id="loginMessage"></div>
 
     </div>
 
-  </section>
+
+    <!-- REGISTER -->
+
+    <div id="registerBox" class="hidden">
+
+      <input
+        id="registerUsername"
+        type="text"
+        placeholder="მომხმარებლის სახელი"
+        autocomplete="username"
+      >
+
+      <input
+        id="registerEmail"
+        type="email"
+        placeholder="ელფოსტა"
+        autocomplete="email"
+      >
+
+      <input
+        id="registerPassword"
+        type="password"
+        placeholder="პაროლი"
+        autocomplete="new-password"
+      >
+
+      <input
+        id="registerPassword2"
+        type="password"
+        placeholder="გაიმეორე პაროლი"
+        autocomplete="new-password"
+      >
+
+      <button
+        id="registerBtn"
+        class="success-btn"
+      >
+        რეგისტრაცია
+      </button>
+
+      <div id="registerMessage"></div>
+
+    </div>
 
 
-  <!-- APP -->
+    <!-- FORGOT -->
 
-  <section id="appSection" class="hidden">
+    <div id="forgotBox" class="hidden">
+
+      <h3>🔑 პაროლის აღდგენა</h3>
+
+      <input
+        id="forgotUsername"
+        type="text"
+        placeholder="Username"
+      >
+
+      <button id="sendResetBtn">
+        აღდგენის ბმულის გაგზავნა
+      </button>
+
+      <button
+        id="backLoginBtn"
+        class="secondary-btn"
+      >
+        უკან
+      </button>
+
+      <div id="forgotMessage"></div>
+
+    </div>
+
+
+    <!-- RECOVERY -->
+
+    <div id="recoveryBox" class="hidden">
+
+      <h3>🔐 ახალი პაროლი</h3>
+
+      <input
+        id="newPassword"
+        type="password"
+        placeholder="ახალი პაროლი"
+      >
+
+      <input
+        id="newPassword2"
+        type="password"
+        placeholder="გაიმეორე ახალი პაროლი"
+      >
+
+      <button id="changePasswordBtn">
+        პაროლის შეცვლა
+      </button>
+
+      <div id="recoveryMessage"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       APP
+  ====================================================== -->
+
+  <div id="appScreen" class="hidden">
+
+    <div class="card topbar">
+
+      <div>
+        👤
+        <span id="currentUsername" class="username"></span>
+      </div>
+
+      <button
+        id="logoutBtn"
+        class="danger-btn"
+      >
+        გასვლა
+      </button>
+
+    </div>
+
 
     <div class="app-grid">
 
-      <!-- SIDEBAR -->
+      <!-- =================================================
+           SIDEBAR
+      ================================================== -->
 
-      <aside class="card sidebar">
+      <div class="sidebar">
 
-        <h2>💬 ჩატი</h2>
+        <!-- SEARCH -->
 
-        <p>
-          მოძებნე მომხმარებელი username-ით.
-        </p>
+        <div class="card">
 
-        <div class="user-search">
+          <h3>🔎 მომხმარებლის ძებნა</h3>
 
           <input
             id="searchUsername"
             type="text"
-            placeholder="username"
+            placeholder="მაგ: suj"
           >
 
-          <button id="searchUserBtn">
+          <button id="searchBtn">
             ძებნა
           </button>
 
+          <div id="searchResult"></div>
+
         </div>
 
-        <div id="searchResult"></div>
 
+        <!-- REQUESTS -->
 
-        <!-- FRIEND REQUESTS -->
+        <div class="card">
 
-        <div style="margin-top:20px;">
+          <h3>
+            👥 მეგობრობის მოთხოვნები
+          </h3>
 
-          <div class="section-title">
-            <h3>👥 მეგობრობის მოთხოვნები</h3>
-            <span id="requestBadge"></span>
-          </div>
-
-          <div id="friendRequestsList">
-            <div class="message">
-              მოთხოვნები არ არის.
+          <div id="friendRequests">
+            <div class="small">
+              იტვირთება...
             </div>
           </div>
 
@@ -675,65 +543,14 @@
 
         <!-- CONVERSATIONS -->
 
-        <div class="conversation-list">
+        <div class="card">
 
-          <h3>ჩემი ჩატები</h3>
+          <h3>💬 ჩატები</h3>
 
-          <div id="conversationList">
-            <div class="loading">
-              ჩატები იტვირთება...
+          <div id="conversations">
+            <div class="small">
+              ჩატები არ არის.
             </div>
-          </div>
-
-        </div>
-
-      </aside>
-
-
-      <!-- MAIN -->
-
-      <main>
-
-        <!-- CHAT -->
-
-        <div class="card chat-card">
-
-          <div class="chat-header">
-
-            <h3 id="chatTitle">
-              აირჩიე მომხმარებელი
-            </h3>
-
-            <div id="chatHeaderInfo" class="chat-header-info"></div>
-
-          </div>
-
-
-          <div id="incomingNotice"></div>
-
-
-          <div id="chatMessages" class="chat-messages">
-
-            <div class="chat-empty">
-              აირჩიე მომხმარებელი და დაიწყე საუბარი.
-            </div>
-
-          </div>
-
-
-          <div class="send-box">
-
-            <input
-              id="messageInput"
-              type="text"
-              placeholder="დაწერე შეტყობინება..."
-              disabled
-            >
-
-            <button id="sendMessageBtn" disabled>
-              გაგზავნა
-            </button>
-
           </div>
 
         </div>
@@ -743,1203 +560,1369 @@
 
         <div class="card">
 
-          <h2>📁 ჩემი ფაილები</h2>
+          <h3>📁 ჩემი ფაილები</h3>
 
-          <div class="upload-area" id="uploadArea">
+          <input
+            id="fileInput"
+            type="file"
+          >
 
-            <p>
-              გადაიტანე ფაილი აქ
-              <br>
-              ან
-            </p>
+          <button
+            id="uploadBtn"
+            class="success-btn"
+          >
+            ატვირთვა
+          </button>
 
-            <button id="chooseFileBtn">
-              ფაილის არჩევა
-            </button>
+          <div
+            id="fileMessage"
+            class="small"
+          ></div>
 
-            <input
-              id="fileInput"
-              type="file"
-              multiple
-              class="hidden"
-            >
+          <div id="filesList"></div>
 
-            <p>
-              ფოტო / ვიდეო / დოკუმენტი
-            </p>
+        </div>
 
-            <strong>
-              მაქსიმუმ 50 MB თითო ფაილზე
-            </strong>
+      </div>
 
+
+      <!-- =================================================
+           CHAT
+      ================================================== -->
+
+      <div class="chat-area">
+
+        <div class="card">
+
+          <div
+            id="chatEmpty"
+            class="loading"
+          >
+            აირჩიე მომხმარებელი ჩატის დასაწყებად.
           </div>
 
-          <div class="notice">
-            ⏳ ატვირთული ფაილები 3 დღის შემდეგ იშლება ავტომატურად.
-          </div>
 
-          <div id="uploadMessage"></div>
+          <div
+            id="chatBox"
+            class="hidden"
+          >
 
-          <div class="file-list">
+            <div class="chat-header">
 
-            <h3>ატვირთული ფაილები</h3>
+              <h2>
+                💬
+                <span id="chatUsername"></span>
+              </h2>
 
-            <div id="fileList">
-              <div class="loading">
-                ფაილების ჩატვირთვა...
-              </div>
+              <div
+                id="chatStatus"
+                class="small"
+              ></div>
+
             </div>
+
+
+            <div
+              id="messages"
+              class="messages"
+            ></div>
+
+
+            <div class="send-row">
+
+              <textarea
+                id="messageInput"
+                placeholder="დაწერე შეტყობინება..."
+              ></textarea>
+
+              <button id="sendMessageBtn">
+                გაგზავნა
+              </button>
+
+            </div>
+
+            <div
+              id="messageStatus"
+              class="small"
+            ></div>
 
           </div>
 
         </div>
 
-      </main>
+      </div>
 
     </div>
 
-  </section>
+  </div>
 
 </div>
 
 
 <script>
 
-  /* =========================================================
-     SUPABASE
-  ========================================================= */
+"use strict";
 
-  const SUPABASE_URL =
-    "https://ihuiepozcsptkxslpgjb.supabase.co";
 
-  const SUPABASE_ANON_KEY =
-    "sb_publishable_iM_PP_hIpGCsAPn1-lAj3w_FH9kI3fS";
+/* =========================================================
+   SUPABASE
+========================================================= */
 
-  const supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
+const SUPABASE_URL =
+  "https://ihuiepozcsptkxslpgjb.supabase.co";
 
+const SUPABASE_KEY =
+  "sb_publishable_iM_PP_hIpGCsAPn1-lAj3w_FH9kI3fS";
 
-  /* =========================================================
-     STATE
-  ========================================================= */
-
-  let currentUser = null;
-  let currentUsername = null;
-
-  let selectedUser = null;
-
-  let messageChannel = null;
-  let messageRefreshTimer = null;
-
-  let friendChannel = null;
-
-
-  /* =========================================================
-     HELPERS
-  ========================================================= */
-
-  function $(id) {
-    return document.getElementById(id);
-  }
-
-
-  function escapeHtml(value) {
-
-    if (
-      value === null ||
-      value === undefined
-    ) {
-      return "";
-    }
-
-    return String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-
-  }
-
-
-  function showMessage(
-    element,
-    text,
-    type = ""
-  ) {
-
-    element.innerHTML =
-      `<div class="message ${type}">
-        ${escapeHtml(text)}
-      </div>`;
-
-  }
-
-
-  function formatDate(date) {
-
-    return new Date(date).toLocaleString(
-      "ka-GE",
-      {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit"
-      }
-    );
-
-  }
-
-
-  function formatBytes(bytes) {
-
-    if (!bytes) {
-      return "0 B";
-    }
-
-    const units = [
-      "B",
-      "KB",
-      "MB",
-      "GB"
-    ];
-
-    const i =
-      Math.floor(
-        Math.log(bytes) / Math.log(1024)
-      );
-
-    return (
-      bytes /
-      Math.pow(1024, i)
-    ).toFixed(1)
-      + " "
-      + units[i];
-
-  }
-
-
-  function hideAuthForms() {
-
-    $("loginForm").classList.add("hidden");
-    $("registerForm").classList.add("hidden");
-    $("forgotForm").classList.add("hidden");
-    $("updatePasswordForm").classList.add("hidden");
-
-  }
-
-
-  function showLogin() {
-
-    hideAuthForms();
-
-    $("loginForm")
-      .classList
-      .remove("hidden");
-
-  }
-
-
-  function showRegister() {
-
-    hideAuthForms();
-
-    $("registerForm")
-      .classList
-      .remove("hidden");
-
-  }
-
-
-  function showForgotPassword() {
-
-    hideAuthForms();
-
-    $("forgotForm")
-      .classList
-      .remove("hidden");
-
-  }
-
-
-  function showUpdatePassword() {
-
-    hideAuthForms();
-
-    $("updatePasswordForm")
-      .classList
-      .remove("hidden");
-
-  }
-
-
-  /* =========================================================
-     AUTH UI
-  ========================================================= */
-
-  $("showLoginBtn")
-    .addEventListener(
-      "click",
-      showLogin
-    );
-
-  $("showRegisterBtn")
-    .addEventListener(
-      "click",
-      showRegister
-    );
-
-  $("forgotPasswordBtn")
-    .addEventListener(
-      "click",
-      showForgotPassword
-    );
-
-  $("backToLoginBtn")
-    .addEventListener(
-      "click",
-      showLogin
-    );
-
-
-  /* =========================================================
-     REGISTER
-  ========================================================= */
-
-  $("registerBtn")
-    .addEventListener(
-      "click",
-      register
-    );
-
-
-  async function register() {
-
-    const username =
-      $("registerUsername")
-        .value
-        .trim();
-
-    const email =
-      $("registerEmail")
-        .value
-        .trim();
-
-    const password =
-      $("registerPassword")
-        .value;
-
-    const password2 =
-      $("registerPassword2")
-        .value;
-
-
-    $("registerMessage").innerHTML = "";
-
-
-    if (!username) {
-
-      showMessage(
-        $("registerMessage"),
-        "შეიყვანე მომხმარებლის სახელი.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    if (!email) {
-
-      showMessage(
-        $("registerMessage"),
-        "შეიყვანე ელფოსტა.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    if (password.length < 6) {
-
-      showMessage(
-        $("registerMessage"),
-        "პაროლი უნდა იყოს მინიმუმ 6 სიმბოლო.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    if (password !== password2) {
-
-      showMessage(
-        $("registerMessage"),
-        "პაროლები ერთმანეთს არ ემთხვევა.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    $("registerBtn").disabled = true;
-
-
-    try {
-
-      const {
-        data: existing,
-        error: searchError
-      } =
-        await supabaseClient.rpc(
-          "find_profile_by_username",
-          {
-            search_username: username
-          }
-        );
-
-
-      if (searchError) {
-        throw searchError;
-      }
-
-
-      if (
-        existing &&
-        existing.length > 0
-      ) {
-
-        throw new Error(
-          "ეს მომხმარებლის სახელი უკვე დაკავებულია."
-        );
-
-      }
-
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient.auth.signUp({
-
-          email: email,
-
-          password: password,
-
-          options: {
-            data: {
-              username: username
-            }
-          }
-
-        });
-
-
-      if (error) {
-        throw error;
-      }
-
-
-      if (!data.user) {
-
-        throw new Error(
-          "ანგარიშის შექმნა ვერ მოხერხდა."
-        );
-
-      }
-
-
-      const {
-        error: profileError
-      } =
-        await supabaseClient
-          .from("profiles")
-          .upsert(
-            {
-              id: data.user.id,
-              username: username
-            },
-            {
-              onConflict: "id"
-            }
-          );
-
-
-      if (profileError) {
-        throw profileError;
-      }
-
-
-      if (data.session) {
-
-        showMessage(
-          $("registerMessage"),
-          "ანგარიში წარმატებით შეიქმნა.",
-          "success"
-        );
-
-        currentUser =
-          data.user;
-
-        await loadCurrentUser();
-
-      } else {
-
-        showMessage(
-          $("registerMessage"),
-          "ანგარიში შეიქმნა. შეამოწმე ელფოსტა და შემდეგ შედი.",
-          "success"
-        );
-
-      }
-
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        $("registerMessage"),
-        error.message ||
-        "რეგისტრაციის შეცდომა.",
-        "error"
-      );
-
-    } finally {
-
-      $("registerBtn").disabled = false;
-
-    }
-
-  }
-
-
-  /* =========================================================
-     LOGIN
-  ========================================================= */
-
-  $("loginBtn")
-    .addEventListener(
-      "click",
-      login
-    );
-
-
-  $("loginPassword")
-    .addEventListener(
-      "keydown",
-      function(event) {
-
-        if (event.key === "Enter") {
-          login();
-        }
-
-      }
-    );
-
-
-  async function login() {
-
-    const identifier =
-      $("loginIdentifier")
-        .value
-        .trim();
-
-    const password =
-      $("loginPassword")
-        .value;
-
-
-    $("loginMessage").innerHTML = "";
-
-
-    if (!identifier || !password) {
-
-      showMessage(
-        $("loginMessage"),
-        "შეავსე ორივე ველი.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    $("loginBtn").disabled = true;
-
-
-    try {
-
-      let email = identifier;
-
-
-      if (!identifier.includes("@")) {
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient.rpc(
-            "find_profile_login",
-            {
-              search_username: identifier
-            }
-          );
-
-
-        if (error) {
-          throw error;
-        }
-
-
-        if (
-          !data ||
-          data.length === 0
-        ) {
-
-          throw new Error(
-            "ასეთი მომხმარებელი ვერ მოიძებნა."
-          );
-
-        }
-
-
-        email =
-          data[0].email;
-
-      }
-
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient.auth
-          .signInWithPassword({
-
-            email: email,
-
-            password: password
-
-          });
-
-
-      if (error) {
-        throw error;
-      }
-
-
-      if (!data.session) {
-
-        throw new Error(
-          "შესვლა ვერ მოხერხდა."
-        );
-
-      }
-
-
-      currentUser =
-        data.user;
-
-      await loadCurrentUser();
-
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        $("loginMessage"),
-        error.message ||
-        "შესვლის შეცდომა.",
-        "error"
-      );
-
-    } finally {
-
-      $("loginBtn").disabled = false;
-
-    }
-
-  }
-
-
-  /* =========================================================
-     PASSWORD RESET
-  ========================================================= */
-
-  $("sendResetBtn")
-    .addEventListener(
-      "click",
-      sendPasswordReset
-    );
-
-
-  async function sendPasswordReset() {
-
-    const email =
-      $("resetEmail")
-        .value
-        .trim();
-
-
-    $("resetMessage").innerHTML = "";
-
-
-    if (!email) {
-
-      showMessage(
-        $("resetMessage"),
-        "შეიყვანე ელფოსტა.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    $("sendResetBtn").disabled = true;
-
-
-    try {
-
-      const redirectUrl =
-        window.location.origin +
-        window.location.pathname;
-
-
-      const {
-        error
-      } =
-        await supabaseClient.auth
-          .resetPasswordForEmail(
-            email,
-            {
-              redirectTo: redirectUrl
-            }
-          );
-
-
-      if (error) {
-        throw error;
-      }
-
-
-      showMessage(
-        $("resetMessage"),
-        "პაროლის აღდგენის ბმული გამოგზავნილია. შეამოწმე Inbox და Spam.",
-        "success"
-      );
-
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        $("resetMessage"),
-        error.message ||
-        "აღდგენის ბმულის გაგზავნა ვერ მოხერხდა.",
-        "error"
-      );
-
-    } finally {
-
-      $("sendResetBtn").disabled = false;
-
-    }
-
-  }
-
-
-  /* =========================================================
-     UPDATE PASSWORD
-  ========================================================= */
-
-  $("updatePasswordBtn")
-    .addEventListener(
-      "click",
-      updatePassword
-    );
-
-
-  async function updatePassword() {
-
-    const password =
-      $("newPassword")
-        .value;
-
-    const password2 =
-      $("newPassword2")
-        .value;
-
-
-    $("updatePasswordMessage").innerHTML = "";
-
-
-    if (password.length < 6) {
-
-      showMessage(
-        $("updatePasswordMessage"),
-        "ახალი პაროლი უნდა იყოს მინიმუმ 6 სიმბოლო.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    if (password !== password2) {
-
-      showMessage(
-        $("updatePasswordMessage"),
-        "პაროლები ერთმანეთს არ ემთხვევა.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    $("updatePasswordBtn").disabled = true;
-
-
-    try {
-
-      const {
-        error
-      } =
-        await supabaseClient.auth
-          .updateUser({
-            password: password
-          });
-
-
-      if (error) {
-        throw error;
-      }
-
-
-      showMessage(
-        $("updatePasswordMessage"),
-        "პაროლი წარმატებით შეიცვალა.",
-        "success"
-      );
-
-
-      setTimeout(
-        async function() {
-
-          await loadCurrentUser();
-
-        },
-        1200
-      );
-
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        $("updatePasswordMessage"),
-        error.message ||
-        "პაროლის შეცვლა ვერ მოხერხდა.",
-        "error"
-      );
-
-    } finally {
-
-      $("updatePasswordBtn").disabled = false;
-
-    }
-
-  }
-
-
-  /* =========================================================
-     AUTH SESSION
-  ========================================================= */
-
-  supabaseClient.auth.onAuthStateChange(
-    async function(event, session) {
-
-      console.log(
-        "Auth event:",
-        event
-      );
-
-
-      if (
-        event === "PASSWORD_RECOVERY"
-      ) {
-
-        currentUser =
-          session?.user || null;
-
-        if (currentUser) {
-
-          $("authSection")
-            .classList
-            .remove("hidden");
-
-          $("appSection")
-            .classList
-            .add("hidden");
-
-          showUpdatePassword();
-
-        }
-
-        return;
-
-      }
-
-
-      if (session?.user) {
-
-        currentUser =
-          session.user;
-
-        await loadCurrentUser();
-
-      } else {
-
-        currentUser = null;
-
-        showLoggedOut();
-
-      }
-
-    }
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
   );
 
 
-  async function loadCurrentUser() {
+/* =========================================================
+   HELPERS
+========================================================= */
 
-    if (!currentUser) {
+function $(id) {
+  return document.getElementById(id);
+}
 
-      const {
-        data
-      } =
-        await supabaseClient.auth
-          .getUser();
 
-      currentUser =
-        data.user;
+function escapeHtml(value) {
 
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+function showMessage(
+  element,
+  text,
+  type = ""
+) {
+
+  element.innerHTML =
+    `<div class="message ${type}">
+      ${escapeHtml(text)}
+    </div>`;
+
+}
+
+
+function formatTime(date) {
+
+  return new Date(date).toLocaleString(
+    "ka-GE",
+    {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    }
+  );
+
+}
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let currentUser = null;
+
+let currentProfile = null;
+
+let selectedUser = null;
+
+let messageChannel = null;
+
+let friendRequestChannel = null;
+
+let pollingTimer = null;
+
+let isLoadingMessages = false;
+
+let lastMessageRenderKey = "";
+
+
+/* =========================================================
+   AUTH UI
+========================================================= */
+
+$("loginTab").addEventListener(
+  "click",
+  function() {
+
+    $("loginBox")
+      .classList.remove("hidden");
+
+    $("registerBox")
+      .classList.add("hidden");
+
+    $("forgotBox")
+      .classList.add("hidden");
+
+    $("loginTab")
+      .classList.add("active");
+
+    $("registerTab")
+      .classList.remove("active");
+
+  }
+);
+
+
+$("registerTab").addEventListener(
+  "click",
+  function() {
+
+    $("loginBox")
+      .classList.add("hidden");
+
+    $("registerBox")
+      .classList.remove("hidden");
+
+    $("forgotBox")
+      .classList.add("hidden");
+
+    $("registerTab")
+      .classList.add("active");
+
+    $("loginTab")
+      .classList.remove("active");
+
+  }
+);
+
+
+$("forgotBtn").addEventListener(
+  "click",
+  function() {
+
+    $("loginBox")
+      .classList.add("hidden");
+
+    $("forgotBox")
+      .classList.remove("hidden");
+
+  }
+);
+
+
+$("backLoginBtn").addEventListener(
+  "click",
+  function() {
+
+    $("forgotBox")
+      .classList.add("hidden");
+
+    $("loginBox")
+      .classList.remove("hidden");
+
+  }
+);
+
+
+/* =========================================================
+   REGISTER
+========================================================= */
+
+$("registerBtn").addEventListener(
+  "click",
+  register
+);
+
+
+async function register() {
+
+  const username =
+    $("registerUsername")
+      .value
+      .trim();
+
+  const email =
+    $("registerEmail")
+      .value
+      .trim();
+
+  const password =
+    $("registerPassword")
+      .value;
+
+  const password2 =
+    $("registerPassword2")
+      .value;
+
+
+  $("registerMessage").innerHTML = "";
+
+
+  if (!username) {
+
+    showMessage(
+      $("registerMessage"),
+      "შეიყვანე username.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (!/^[a-zA-Z0-9_.-]{3,30}$/.test(username)) {
+
+    showMessage(
+      $("registerMessage"),
+      "Username უნდა იყოს 3-30 სიმბოლო და შეიცავდეს მხოლოდ ლათინურ ასოებს, ციფრებს, წერტილს, _ ან -.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (!email) {
+
+    showMessage(
+      $("registerMessage"),
+      "შეიყვანე ელფოსტა.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (password.length < 6) {
+
+    showMessage(
+      $("registerMessage"),
+      "პაროლი უნდა იყოს მინიმუმ 6 სიმბოლო.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (password !== password2) {
+
+    showMessage(
+      $("registerMessage"),
+      "პაროლები ერთმანეთს არ ემთხვევა.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  $("registerBtn").disabled = true;
+
+  $("registerBtn").textContent =
+    "რეგისტრაცია...";
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signUp({
+
+        email,
+
+        password,
+
+        options: {
+          data: {
+            username
+          }
+        }
+
+      });
+
+
+    if (error) {
+      throw error;
     }
 
 
-    if (!currentUser) {
-
-      showLoggedOut();
-
-      return;
-
+    if (!data.user) {
+      throw new Error(
+        "მომხმარებლის შექმნა ვერ მოხერხდა."
+      );
     }
 
 
     const {
-      data: profile,
-      error
+      error: profileError
     } =
       await supabaseClient
         .from("profiles")
-        .select("username")
-        .eq(
-          "id",
-          currentUser.id
-        )
-        .maybeSingle();
+        .insert({
+
+          id: data.user.id,
+
+          username: username
+
+        });
 
 
-    if (
-      !error &&
-      profile
-    ) {
+    if (profileError) {
 
-      currentUsername =
-        profile.username;
+      if (
+        profileError.code === "23505"
+      ) {
 
-    } else {
+        throw new Error(
+          "ეს username უკვე დაკავებულია."
+        );
 
-      currentUsername =
-        currentUser
-          .user_metadata
-          ?.username ||
-        "მომხმარებელი";
+      }
+
+      throw profileError;
+    }
+
+
+    showMessage(
+      $("registerMessage"),
+      "რეგისტრაცია წარმატებით დასრულდა. ახლა შედი სისტემაში.",
+      "success"
+    );
+
+
+    $("loginUsername").value =
+      username;
+
+    $("loginBox")
+      .classList.remove("hidden");
+
+    $("registerBox")
+      .classList.add("hidden");
+
+    $("loginTab")
+      .classList.add("active");
+
+    $("registerTab")
+      .classList.remove("active");
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      $("registerMessage"),
+      error.message,
+      "error"
+    );
+
+  } finally {
+
+    $("registerBtn").disabled =
+      false;
+
+    $("registerBtn").textContent =
+      "რეგისტრაცია";
+
+  }
+
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+$("loginBtn").addEventListener(
+  "click",
+  login
+);
+
+
+async function login() {
+
+  const username =
+    $("loginUsername")
+      .value
+      .trim();
+
+  const password =
+    $("loginPassword")
+      .value;
+
+
+  $("loginMessage").innerHTML = "";
+
+
+  if (!username || !password) {
+
+    showMessage(
+      $("loginMessage"),
+      "შეავსე username და პაროლი.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  $("loginBtn").disabled = true;
+
+  $("loginBtn").textContent =
+    "შესვლა...";
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.rpc(
+        "find_profile_login",
+        {
+          search_username: username
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (!data || data.length === 0) {
+
+      throw new Error(
+        "ასეთი username ვერ მოიძებნა."
+      );
 
     }
 
 
-    $("headerUsername").textContent =
-      "👤 " + currentUsername;
+    const email =
+      data[0].email;
 
 
-    $("authSection")
-      .classList
-      .add("hidden");
+    const {
+      error: loginError
+    } =
+      await supabaseClient.auth.signInWithPassword({
 
-    $("appSection")
-      .classList
-      .remove("hidden");
+        email,
 
-    $("headerUser")
-      .classList
-      .remove("hidden");
+        password
 
-
-    await loadFiles();
-
-    await loadFriendRequests();
-
-    await loadConversations();
-
-    setupRealtime();
-
-    setupFriendRealtime();
-
-  }
+      });
 
 
-  function showLoggedOut() {
+    if (loginError) {
+      throw loginError;
+    }
 
-    $("authSection")
-      .classList
-      .remove("hidden");
 
-    $("appSection")
-      .classList
-      .add("hidden");
+    await startApp();
 
-    $("headerUser")
-      .classList
-      .add("hidden");
 
-    showLogin();
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      $("loginMessage"),
+      error.message,
+      "error"
+    );
+
+  } finally {
+
+    $("loginBtn").disabled =
+      false;
+
+    $("loginBtn").textContent =
+      "შესვლა";
 
   }
 
+}
 
-  /* =========================================================
-     LOGOUT
-  ========================================================= */
 
-  $("logoutBtn")
-    .addEventListener(
-      "click",
+/* =========================================================
+   FORGOT PASSWORD
+========================================================= */
+
+$("sendResetBtn").addEventListener(
+  "click",
+  sendPasswordReset
+);
+
+
+async function sendPasswordReset() {
+
+  const username =
+    $("forgotUsername")
+      .value
+      .trim();
+
+
+  if (!username) {
+
+    showMessage(
+      $("forgotMessage"),
+      "შეიყვანე username.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.rpc(
+        "find_profile_login",
+        {
+          search_username: username
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (!data || data.length === 0) {
+
+      throw new Error(
+        "ასეთი username ვერ მოიძებნა."
+      );
+
+    }
+
+
+    const email =
+      data[0].email;
+
+
+    const redirectUrl =
+      window.location.origin +
+      window.location.pathname;
+
+
+    const {
+      error: resetError
+    } =
+      await supabaseClient.auth.resetPasswordForEmail(
+        email,
+        {
+          redirectTo: redirectUrl
+        }
+      );
+
+
+    if (resetError) {
+      throw resetError;
+    }
+
+
+    showMessage(
+      $("forgotMessage"),
+      "პაროლის აღდგენის ბმული გაიგზავნა ელფოსტაზე.",
+      "success"
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      $("forgotMessage"),
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   RECOVERY
+========================================================= */
+
+$("changePasswordBtn").addEventListener(
+  "click",
+  changePassword
+);
+
+
+async function changePassword() {
+
+  const password =
+    $("newPassword")
+      .value;
+
+  const password2 =
+    $("newPassword2")
+      .value;
+
+
+  if (password.length < 6) {
+
+    showMessage(
+      $("recoveryMessage"),
+      "პაროლი უნდა იყოს მინიმუმ 6 სიმბოლო.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (password !== password2) {
+
+    showMessage(
+      $("recoveryMessage"),
+      "პაროლები ერთმანეთს არ ემთხვევა.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  try {
+
+    const {
+      error
+    } =
+      await supabaseClient.auth.updateUser({
+
+        password
+
+      });
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    showMessage(
+      $("recoveryMessage"),
+      "პაროლი წარმატებით შეიცვალა.",
+      "success"
+    );
+
+
+    setTimeout(
       async function() {
-
-        if (messageChannel) {
-
-          await supabaseClient
-            .removeChannel(
-              messageChannel
-            );
-
-          messageChannel = null;
-
-        }
-
-
-        if (friendChannel) {
-
-          await supabaseClient
-            .removeChannel(
-              friendChannel
-            );
-
-          friendChannel = null;
-
-        }
-
-
-        if (messageRefreshTimer) {
-
-          clearInterval(
-            messageRefreshTimer
-          );
-
-          messageRefreshTimer = null;
-
-        }
-
 
         await supabaseClient.auth.signOut();
 
-      }
+        window.location.reload();
+
+      },
+      1500
     );
 
 
-  /* =========================================================
-     USER SEARCH
-  ========================================================= */
+  } catch (error) {
 
-  $("searchUserBtn")
-    .addEventListener(
-      "click",
-      searchUser
+    showMessage(
+      $("recoveryMessage"),
+      error.message,
+      "error"
     );
 
+  }
 
-  $("searchUsername")
-    .addEventListener(
-      "keydown",
-      function(event) {
+}
 
-        if (event.key === "Enter") {
-          searchUser();
+
+/* =========================================================
+   START APP
+========================================================= */
+
+async function startApp() {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (error || !data.user) {
+
+    return;
+
+  }
+
+
+  currentUser =
+    data.user;
+
+
+  const {
+    data: profileData,
+    error: profileError
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select("id, username")
+      .eq("id", currentUser.id)
+      .maybeSingle();
+
+
+  if (profileError) {
+
+    console.error(profileError);
+
+    throw profileError;
+
+  }
+
+
+  if (!profileData) {
+
+    throw new Error(
+      "პროფილი ვერ მოიძებნა."
+    );
+
+  }
+
+
+  currentProfile =
+    profileData;
+
+
+  $("currentUsername")
+    .textContent =
+    currentProfile.username;
+
+
+  $("authScreen")
+    .classList.add("hidden");
+
+
+  $("appScreen")
+    .classList.remove("hidden");
+
+
+  await loadFriendRequests();
+
+  await loadConversations();
+
+  await loadFiles();
+
+  subscribeRealtime();
+
+  startPolling();
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+$("logoutBtn").addEventListener(
+  "click",
+  async function() {
+
+    stopPolling();
+
+    if (messageChannel) {
+
+      await supabaseClient
+        .removeChannel(messageChannel);
+
+      messageChannel = null;
+
+    }
+
+
+    if (friendRequestChannel) {
+
+      await supabaseClient
+        .removeChannel(friendRequestChannel);
+
+      friendRequestChannel = null;
+
+    }
+
+
+    await supabaseClient.auth.signOut();
+
+    window.location.reload();
+
+  }
+);
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+$("searchBtn").addEventListener(
+  "click",
+  searchUser
+);
+
+
+$("searchUsername").addEventListener(
+  "keydown",
+  function(event) {
+
+    if (event.key === "Enter") {
+      searchUser();
+    }
+
+  }
+);
+
+
+async function searchUser() {
+
+  const username =
+    $("searchUsername")
+      .value
+      .trim();
+
+
+  $("searchResult").innerHTML = "";
+
+
+  if (!username) {
+
+    showMessage(
+      $("searchResult"),
+      "შეიყვანე მომხმარებლის სახელი."
+    );
+
+    return;
+  }
+
+
+  $("searchResult").innerHTML =
+    `<div class="loading">
+      🔎 ვეძებ...
+    </div>`;
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.rpc(
+        "find_profile_by_username",
+        {
+          search_username: username
         }
-
-      }
-    );
+      );
 
 
-  async function searchUser() {
+    if (error) {
+      throw error;
+    }
 
-    const username =
-      $("searchUsername")
-        .value
-        .trim();
+
+    const users =
+      (data || []).filter(
+        function(user) {
+          return user.id !== currentUser.id;
+        }
+      );
+
+
+    if (users.length === 0) {
+
+      showMessage(
+        $("searchResult"),
+        "მომხმარებელი ვერ მოიძებნა."
+      );
+
+      return;
+    }
 
 
     $("searchResult").innerHTML = "";
 
 
-    if (!username) {
-      return;
-    }
+    for (const user of users) {
+
+      const box =
+        document.createElement("div");
+
+      box.className =
+        "user-result";
 
 
-    try {
+      box.innerHTML =
+        `<strong>
+          👤 ${escapeHtml(user.username)}
+        </strong>
 
-      const {
-        data,
-        error
-      } =
-        await supabaseClient.rpc(
-          "find_profile_by_username",
-          {
-            search_username: username
+        <button
+          class="add-btn success-btn"
+        >
+          👥 დამატება
+        </button>
+
+        <button
+          class="chat-btn"
+        >
+          💬 ჩატი
+        </button>
+
+        <div class="relationship"></div>`;
+
+
+      box
+        .querySelector(".add-btn")
+        .addEventListener(
+          "click",
+          async function() {
+
+            await sendFriendRequest(user);
+
+            await renderRelationship(
+              user,
+              box
+            );
+
           }
         );
 
 
-      if (error) {
-        throw error;
-      }
+      box
+        .querySelector(".chat-btn")
+        .addEventListener(
+          "click",
+          async function() {
+
+            await selectUser(user);
+
+          }
+        );
 
 
-      if (
-        !data ||
-        data.length === 0
-      ) {
-
-        $("searchResult").innerHTML =
-          `<div class="message">
-            მომხმარებელი ვერ მოიძებნა.
-          </div>`;
-
-        return;
-
-      }
+      $("searchResult")
+        .appendChild(box);
 
 
-      const user =
-        data[0];
-
-
-      if (
-        user.id === currentUser.id
-      ) {
-
-        $("searchResult").innerHTML =
-          `<div class="message">
-            საკუთარი თავის ძებნა არ შეიძლება.
-          </div>`;
-
-        return;
-
-      }
-
-
-      await renderSearchResult(user);
-
-    } catch (error) {
-
-      console.error(error);
-
-      $("searchResult").innerHTML =
-        `<div class="message error">
-          ${escapeHtml(error.message)}
-        </div>`;
+      await renderRelationship(
+        user,
+        box
+      );
 
     }
+
+
+  } catch (error) {
+
+    console.error(
+      "Search error:",
+      error
+    );
+
+
+    showMessage(
+      $("searchResult"),
+      "ძებნის შეცდომა: " +
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   RELATIONSHIP
+========================================================= */
+
+async function renderRelationship(
+  user,
+  box
+) {
+
+  const relationship =
+    box.querySelector(
+      ".relationship"
+    );
+
+  const addBtn =
+    box.querySelector(
+      ".add-btn"
+    );
+
+
+  const {
+    data: friendshipData,
+    error: friendshipError
+  } =
+    await supabaseClient
+      .from("friendships")
+      .select("id")
+      .or(
+        "and(user_id.eq." +
+        currentUser.id +
+        ",friend_id.eq." +
+        user.id +
+        "),and(user_id.eq." +
+        user.id +
+        ",friend_id.eq." +
+        currentUser.id +
+        ")"
+      )
+      .limit(1);
+
+
+  if (friendshipError) {
+
+    console.error(friendshipError);
 
   }
 
 
-  async function renderSearchResult(user) {
+  if (
+    friendshipData &&
+    friendshipData.length > 0
+  ) {
+
+    relationship.innerHTML =
+      `<div class="message success">
+        ✅ მეგობრები ხართ
+      </div>`;
+
+    addBtn.classList.add(
+      "hidden"
+    );
+
+    return;
+  }
+
+
+  const {
+    data: requests,
+    error: requestError
+  } =
+    await supabaseClient
+      .from("friend_requests")
+      .select(
+        "id,sender_id,receiver_id,status"
+      )
+      .or(
+        "and(sender_id.eq." +
+        currentUser.id +
+        ",receiver_id.eq." +
+        user.id +
+        "),and(sender_id.eq." +
+        user.id +
+        ",receiver_id.eq." +
+        currentUser.id +
+        ")"
+      )
+      .eq(
+        "status",
+        "pending"
+      );
+
+
+  if (requestError) {
+
+    console.error(requestError);
+
+  }
+
+
+  const outgoing =
+    (requests || [])
+      .find(
+        function(request) {
+          return (
+            request.sender_id ===
+            currentUser.id
+          );
+        }
+      );
+
+
+  const incoming =
+    (requests || [])
+      .find(
+        function(request) {
+          return (
+            request.receiver_id ===
+            currentUser.id
+          );
+        }
+      );
+
+
+  if (incoming) {
+
+    relationship.innerHTML =
+      `<div class="message">
+        👋 ${escapeHtml(user.username)}-მა
+        გამოგიგზავნა მოთხოვნა.
+      </div>
+
+      <button class="success-btn accept-inline">
+        მიღება
+      </button>
+
+      <button class="danger-btn reject-inline">
+        უარყოფა
+      </button>`;
+
+
+    addBtn.classList.add(
+      "hidden"
+    );
+
+
+    relationship
+      .querySelector(
+        ".accept-inline"
+      )
+      .addEventListener(
+        "click",
+        async function() {
+
+          await acceptFriendRequest(
+            incoming.id
+          );
+
+          await renderRelationship(
+            user,
+            box
+          );
+
+        }
+      );
+
+
+    relationship
+      .querySelector(
+        ".reject-inline"
+      )
+      .addEventListener(
+        "click",
+        async function() {
+
+          await rejectFriendRequest(
+            incoming.id
+          );
+
+          await renderRelationship(
+            user,
+            box
+          );
+
+        }
+      );
+
+
+    return;
+  }
+
+
+  if (outgoing) {
+
+    relationship.innerHTML =
+      `<div class="message">
+        ⏳ მოთხოვნა გაგზავნილია.
+      </div>`;
+
+    addBtn.classList.add(
+      "hidden"
+    );
+
+    return;
+  }
+
+
+  relationship.innerHTML =
+    `<div class="small">
+      ჯერ მეგობრები არ ხართ.
+      სურვილის შემთხვევაში შეგიძლია ჩატიც დაიწყო.
+    </div>`;
+
+}
+
+
+/* =========================================================
+   SEND FRIEND REQUEST
+========================================================= */
+
+async function sendFriendRequest(
+  user
+) {
+
+  try {
+
+    if (
+      user.id === currentUser.id
+    ) {
+
+      throw new Error(
+        "საკუთარ თავს მეგობრებში ვერ დაამატებ."
+      );
+
+    }
+
 
     const {
-      data: friendshipData,
-      error: friendshipError
+      data: friendship
     } =
       await supabaseClient
         .from("friendships")
         .select("id")
         .or(
-          `and(user_id.eq.${currentUser.id},friend_id.eq.${user.id}),and(user_id.eq.${user.id},friend_id.eq.${currentUser.id})`
+          "and(user_id.eq." +
+          currentUser.id +
+          ",friend_id.eq." +
+          user.id +
+          "),and(user_id.eq." +
+          user.id +
+          ",friend_id.eq." +
+          currentUser.id +
+          ")"
         )
         .limit(1);
 
 
-    if (friendshipError) {
-      console.error(friendshipError);
-    }
-
-
     if (
-      friendshipData &&
-      friendshipData.length > 0
+      friendship &&
+      friendship.length > 0
     ) {
 
-      $("searchResult").innerHTML =
-        `<div class="message success">
-          <strong>${escapeHtml(user.username)}</strong>
-          <br>
-          👥 უკვე მეგობარია
-          <br>
-          <button id="openFriendChatBtn">
-            💬 ჩატის გახსნა
-          </button>
-        </div>`;
-
-
-      $("openFriendChatBtn")
-        .addEventListener(
-          "click",
-          function() {
-
-            selectUser({
-              id: user.id,
-              username: user.username
-            });
-
-          }
-        );
+      alert(
+        "ეს მომხმარებელი უკვე მეგობრებშია."
+      );
 
       return;
 
@@ -1947,8 +1930,7 @@
 
 
     const {
-      data: requests,
-      error: requestError
+      data: existing
     } =
       await supabaseClient
         .from("friend_requests")
@@ -1956,901 +1938,488 @@
           "id,sender_id,receiver_id,status"
         )
         .or(
-          `and(sender_id.eq.${currentUser.id},receiver_id.eq.${user.id}),and(sender_id.eq.${user.id},receiver_id.eq.${currentUser.id})`
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        )
-        .limit(5);
-
-
-    if (requestError) {
-      console.error(requestError);
-    }
-
-
-    const request =
-      requests &&
-      requests.length
-        ? requests[0]
-        : null;
-
-
-    if (
-      request &&
-      request.status === "pending" &&
-      request.receiver_id === currentUser.id
-    ) {
-
-      $("searchResult").innerHTML =
-        `<div class="message warning">
-          <strong>${escapeHtml(user.username)}</strong>
-          <br>
-          👥 ამ მომხმარებელმა უკვე გამოგიგზავნა მოთხოვნა.
-          <br>
-          <button id="acceptSearchBtn" class="success-btn">
-            ✓ დამატება
-          </button>
-          <button id="rejectSearchBtn" class="danger">
-            უარყოფა
-          </button>
-        </div>`;
-
-
-      $("acceptSearchBtn")
-        .addEventListener(
-          "click",
-          function() {
-
-            acceptFriendRequest(
-              request.id
-            );
-
-          }
-        );
-
-
-      $("rejectSearchBtn")
-        .addEventListener(
-          "click",
-          function() {
-
-            rejectFriendRequest(
-              request.id
-            );
-
-          }
-        );
-
-      return;
-
-    }
-
-
-    if (
-      request &&
-      request.status === "pending" &&
-      request.sender_id === currentUser.id
-    ) {
-
-      $("searchResult").innerHTML =
-        `<div class="message warning">
-          <strong>${escapeHtml(user.username)}</strong>
-          <br>
-          ⏳ მეგობრობის მოთხოვნა უკვე გაგზავნილია.
-          <br>
-          <button id="openPendingChatBtn">
-            💬 ჩატის გახსნა
-          </button>
-        </div>`;
-
-
-      $("openPendingChatBtn")
-        .addEventListener(
-          "click",
-          function() {
-
-            selectUser({
-              id: user.id,
-              username: user.username
-            });
-
-          }
-        );
-
-      return;
-
-    }
-
-
-    $("searchResult").innerHTML =
-      `<div class="message">
-        <strong>${escapeHtml(user.username)}</strong>
-        <br>
-        <button id="addFriendBtn" class="success-btn">
-          👥 დამატება
-        </button>
-        <button id="startChatBtn">
-          💬 ჩატის დაწყება
-        </button>
-      </div>`;
-
-
-    $("addFriendBtn")
-      .addEventListener(
-        "click",
-        function() {
-
-          sendFriendRequest(user);
-
-        }
-      );
-
-
-    $("startChatBtn")
-      .addEventListener(
-        "click",
-        function() {
-
-          selectUser({
-            id: user.id,
-            username: user.username
-          });
-
-        }
-      );
-
-  }
-
-
-  /* =========================================================
-     SEND FRIEND REQUEST
-  ========================================================= */
-
-  async function sendFriendRequest(user) {
-
-    if (!currentUser) {
-      return;
-    }
-
-
-    try {
-
-      /*
-       * ჯერ ვამოწმებთ უკვე არსებულ მეგობრობას.
-       */
-
-      const {
-        data: friendship,
-        error: friendshipError
-      } =
-        await supabaseClient
-          .from("friendships")
-          .select("id")
-          .or(
-            `and(user_id.eq.${currentUser.id},friend_id.eq.${user.id}),and(user_id.eq.${user.id},friend_id.eq.${currentUser.id})`
-          )
-          .limit(1);
-
-
-      if (friendshipError) {
-        throw friendshipError;
-      }
-
-
-      if (
-        friendship &&
-        friendship.length
-      ) {
-
-        alert(
-          "ეს მომხმარებელი უკვე შენი მეგობარია."
-        );
-
-        return;
-
-      }
-
-
-      /*
-       * ვამოწმებთ მოთხოვნას.
-       */
-
-      const {
-        data: existingRequests,
-        error: requestCheckError
-      } =
-        await supabaseClient
-          .from("friend_requests")
-          .select(
-            "id,sender_id,receiver_id,status"
-          )
-          .or(
-            `and(sender_id.eq.${currentUser.id},receiver_id.eq.${user.id}),and(sender_id.eq.${user.id},receiver_id.eq.${currentUser.id})`
-          )
-          .eq(
-            "status",
-            "pending"
-          )
-          .limit(1);
-
-
-      if (requestCheckError) {
-        throw requestCheckError;
-      }
-
-
-      if (
-        existingRequests &&
-        existingRequests.length > 0
-      ) {
-
-        const existing =
-          existingRequests[0];
-
-
-        /*
-         * თუ მეორე მხარემ უკვე გამოგზავნა მოთხოვნა,
-         * პირდაპირ ვადასტურებთ.
-         */
-
-        if (
-          existing.receiver_id === currentUser.id
-        ) {
-
-          const accepted =
-            await acceptFriendRequest(
-              existing.id
-            );
-
-          if (accepted) {
-
-            alert(
-              "მეგობრობა დადასტურდა."
-            );
-
-          }
-
-          return;
-
-        }
-
-
-        alert(
-          "მეგობრობის მოთხოვნა უკვე გაგზავნილია."
-        );
-
-        return;
-
-      }
-
-
-      const {
-        error
-      } =
-        await supabaseClient
-          .from("friend_requests")
-          .insert({
-
-            sender_id:
-              currentUser.id,
-
-            receiver_id:
-              user.id,
-
-            status:
-              "pending"
-
-          });
-
-
-      if (error) {
-        throw error;
-      }
-
-
-      $("searchResult").innerHTML =
-        `<div class="message success">
-          <strong>${escapeHtml(user.username)}</strong>
-          <br>
-          ✓ მეგობრობის მოთხოვნა გაიგზავნა.
-          <br>
-          ახლა შეგიძლია გაუგზავნო პირველი შეტყობინება.
-        </div>`;
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "მეგობრობის მოთხოვნის გაგზავნა ვერ მოხერხდა: " +
-        error.message
-      );
-
-    }
-
-  }
-
-
-  /* =========================================================
-     LOAD FRIEND REQUESTS
-  ========================================================= */
-
-  async function loadFriendRequests() {
-
-    if (!currentUser) {
-      return;
-    }
-
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("friend_requests")
-        .select(
-          "id,sender_id,receiver_id,status,created_at"
-        )
-        .eq(
-          "receiver_id",
-          currentUser.id
+          "and(sender_id.eq." +
+          currentUser.id +
+          ",receiver_id.eq." +
+          user.id +
+          "),and(sender_id.eq." +
+          user.id +
+          ",receiver_id.eq." +
+          currentUser.id +
+          ")"
         )
         .eq(
           "status",
           "pending"
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
         );
-
-
-    if (error) {
-
-      console.error(
-        "Friend request error:",
-        error
-      );
-
-      return;
-
-    }
-
-
-    const list =
-      $("friendRequestsList");
-
-    const badge =
-      $("requestBadge");
-
-
-    list.innerHTML = "";
 
 
     if (
-      !data ||
-      data.length === 0
+      existing &&
+      existing.length > 0
     ) {
 
-      badge.innerHTML = "";
+      const request =
+        existing[0];
 
-      list.innerHTML =
-        `<div class="message">
-          მოთხოვნები არ არის.
-        </div>`;
+
+      if (
+        request.receiver_id ===
+        currentUser.id
+      ) {
+
+        await acceptFriendRequest(
+          request.id
+        );
+
+        alert(
+          "მეგობრობის მოთხოვნა მიღებულია."
+        );
+
+        return;
+
+      }
+
+
+      alert(
+        "მოთხოვნა უკვე გაგზავნილია."
+      );
 
       return;
 
-    }
-
-
-    badge.innerHTML =
-      `<span class="badge">${data.length}</span>`;
-
-
-    for (
-      const request of data
-    ) {
-
-      let username =
-        "მომხმარებელი";
-
-
-      try {
-
-        const {
-          data: profile
-        } =
-          await supabaseClient.rpc(
-            "find_profile_by_id",
-            {
-              profile_id:
-                request.sender_id
-            }
-          );
-
-
-        if (
-          profile &&
-          profile.length
-        ) {
-
-          username =
-            profile[0].username;
-
-        }
-
-      } catch (error) {
-
-        console.error(error);
-
-      }
-
-
-      const item =
-        document.createElement("div");
-
-      item.className =
-        "request-item";
-
-
-      item.innerHTML =
-        `<strong>
-          👤 ${escapeHtml(username)}
-        </strong>
-        <div>
-          გიგზავნის მეგობრობის მოთხოვნას.
-        </div>
-        <div class="request-actions">
-          <button class="success-btn accept-request-btn">
-            ✓ მიღება
-          </button>
-          <button class="danger reject-request-btn">
-            ✕ უარყოფა
-          </button>
-          <button class="secondary open-request-chat-btn">
-            💬 ჩატი
-          </button>
-        </div>`;
-
-
-      item
-        .querySelector(
-          ".accept-request-btn"
-        )
-        .addEventListener(
-          "click",
-          function() {
-
-            acceptFriendRequest(
-              request.id
-            );
-
-          }
-        );
-
-
-      item
-        .querySelector(
-          ".reject-request-btn"
-        )
-        .addEventListener(
-          "click",
-          function() {
-
-            rejectFriendRequest(
-              request.id
-            );
-
-          }
-        );
-
-
-      item
-        .querySelector(
-          ".open-request-chat-btn"
-        )
-        .addEventListener(
-          "click",
-          function() {
-
-            selectUser({
-              id:
-                request.sender_id,
-
-              username:
-                username
-            });
-
-          }
-        );
-
-
-      list.appendChild(item);
-
-    }
-
-  }
-
-
-  /* =========================================================
-     ACCEPT FRIEND REQUEST
-  ========================================================= */
-
-  async function acceptFriendRequest(
-    requestId
-  ) {
-
-    try {
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient.rpc(
-          "accept_friend_request",
-          {
-            request_id:
-              requestId
-          }
-        );
-
-
-      if (error) {
-        throw error;
-      }
-
-
-      if (data === false) {
-
-        throw new Error(
-          "მეგობრობის მოთხოვნა ვერ მოიძებნა ან უკვე დამუშავებულია."
-        );
-
-      }
-
-
-      await loadFriendRequests();
-
-      await loadConversations();
-
-
-      alert(
-        "✓ მეგობრობა დადასტურდა."
-      );
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "მეგობრობის დადასტურება ვერ მოხერხდა: " +
-        error.message
-      );
-
-    }
-
-  }
-
-
-  /* =========================================================
-     REJECT FRIEND REQUEST
-  ========================================================= */
-
-  async function rejectFriendRequest(
-    requestId
-  ) {
-
-    try {
-
-      const {
-        error
-      } =
-        await supabaseClient
-          .from("friend_requests")
-          .delete()
-          .eq(
-            "id",
-            requestId
-          )
-          .eq(
-            "receiver_id",
-            currentUser.id
-          );
-
-
-      if (error) {
-        throw error;
-      }
-
-
-      await loadFriendRequests();
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "მოთხოვნის უარყოფა ვერ მოხერხდა: " +
-        error.message
-      );
-
-    }
-
-  }
-
-
-  /* =========================================================
-     SELECT CHAT USER
-  ========================================================= */
-
-  async function selectUser(user) {
-
-    selectedUser = user;
-
-
-    $("chatTitle").textContent =
-      "💬 " + user.username;
-
-
-    $("messageInput").disabled =
-      false;
-
-    $("sendMessageBtn").disabled =
-      false;
-
-
-    $("chatHeaderInfo").textContent =
-      "შეგიძლია გაუგზავნო შეტყობინება მეგობრობის დადასტურებამდე.";
-
-
-    await loadMessages();
-
-    await loadConversations();
-
-  }
-
-
-  /* =========================================================
-     LOAD CONVERSATIONS
-  ========================================================= */
-
-  async function loadConversations() {
-
-    if (!currentUser) {
-      return;
     }
 
 
     const {
-      data: messages,
       error
     } =
       await supabaseClient
-        .from("messages")
-        .select(
-          "id,sender_id,receiver_id,message,created_at,read_at"
-        )
-        .or(
-          `sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        );
+        .from("friend_requests")
+        .insert({
+
+          sender_id:
+            currentUser.id,
+
+          receiver_id:
+            user.id,
+
+          status:
+            "pending"
+
+        });
 
 
     if (error) {
-
-      console.error(
-        "Conversation error:",
-        error
-      );
-
-      return;
-
+      throw error;
     }
 
 
-    const map =
-      new Map();
+    alert(
+      "მეგობრობის მოთხოვნა გაიგზავნა."
+    );
 
 
-    for (
-      const message of messages || []
-    ) {
-
-      const otherId =
-        message.sender_id === currentUser.id
-          ? message.receiver_id
-          : message.sender_id;
+    await loadFriendRequests();
 
 
-      if (
-        otherId === currentUser.id
-      ) {
-        continue;
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ACCEPT
+========================================================= */
+
+async function acceptFriendRequest(
+  requestId
+) {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.rpc(
+      "accept_friend_request",
+      {
+        request_id:
+          requestId
       }
+    );
 
 
-      if (!map.has(otherId)) {
-
-        map.set(
-          otherId,
-          {
-            lastMessage:
-              message,
-
-            unread:
-              message.receiver_id === currentUser.id &&
-              !message.read_at
-          }
-        );
-
-      }
-
-    }
+  if (error) {
+    throw error;
+  }
 
 
-    $("conversationList").innerHTML = "";
+  if (!data) {
 
-
-    if (map.size === 0) {
-
-      $("conversationList").innerHTML =
-        `<div class="message">
-          ჯერ ჩატი არ გაქვს.
-        </div>`;
-
-      return;
-
-    }
-
-
-    for (
-      const [
-        id,
-        info
-      ] of map
-    ) {
-
-      try {
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient.rpc(
-            "find_profile_by_id",
-            {
-              profile_id: id
-            }
-          );
-
-
-        if (
-          error ||
-          !data ||
-          data.length === 0
-        ) {
-          continue;
-        }
-
-
-        const profile =
-          data[0];
-
-
-        const div =
-          document.createElement("div");
-
-
-        div.className =
-          "conversation";
-
-
-        if (
-          selectedUser &&
-          selectedUser.id === profile.id
-        ) {
-
-          div.classList.add(
-            "active"
-          );
-
-        }
-
-
-        if (info.unread) {
-
-          div.classList.add(
-            "unread"
-          );
-
-        }
-
-
-        const unreadText =
-          info.unread
-            ? "🔴 ახალი შეტყობინება"
-            : "";
-
-
-        div.innerHTML =
-          `👤 ${escapeHtml(profile.username)}
-           ${
-             info.unread
-               ? `<span class="badge">ახალი</span>`
-               : ""
-           }
-           <small>
-             ${unreadText}
-           </small>`;
-
-
-        div.addEventListener(
-          "click",
-          function() {
-
-            selectUser({
-              id:
-                profile.id,
-
-              username:
-                profile.username
-            });
-
-          }
-        );
-
-
-        $("conversationList")
-          .appendChild(div);
-
-
-      } catch (error) {
-
-        console.error(error);
-
-      }
-
-    }
+    throw new Error(
+      "მოთხოვნის მიღება ვერ მოხერხდა."
+    );
 
   }
 
 
-  /* =========================================================
-     LOAD MESSAGES
-  ========================================================= */
+  await loadFriendRequests();
 
-  async function loadMessages() {
+  await loadConversations();
 
-    if (
-      !currentUser ||
-      !selectedUser
-    ) {
+}
 
-      return;
 
+/* =========================================================
+   REJECT
+========================================================= */
+
+async function rejectFriendRequest(
+  requestId
+) {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.rpc(
+      "reject_friend_request",
+      {
+        request_id:
+          requestId
+      }
+    );
+
+
+  if (error) {
+    throw error;
+  }
+
+
+  if (!data) {
+
+    throw new Error(
+      "მოთხოვნის უარყოფა ვერ მოხერხდა."
+    );
+
+  }
+
+
+  await loadFriendRequests();
+
+}
+
+
+/* =========================================================
+   FRIEND REQUEST LIST
+========================================================= */
+
+async function loadFriendRequests() {
+
+  if (!currentUser) {
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("friend_requests")
+      .select(
+        "id,sender_id,receiver_id,status,created_at"
+      )
+      .eq(
+        "receiver_id",
+        currentUser.id
+      )
+      .eq(
+        "status",
+        "pending"
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (error) {
+
+    console.error(error);
+
+    $("friendRequests").innerHTML =
+      `<div class="message error">
+        ${escapeHtml(error.message)}
+      </div>`;
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    $("friendRequests").innerHTML =
+      `<div class="small">
+        ახალი მოთხოვნები არ არის.
+      </div>`;
+
+    return;
+  }
+
+
+  $("friendRequests").innerHTML = "";
+
+
+  for (const request of data) {
+
+    const {
+      data: profile,
+      error: profileError
+    } =
+      await supabaseClient.rpc(
+        "find_profile_by_id",
+        {
+          profile_id:
+            request.sender_id
+        }
+      );
+
+
+    if (profileError) {
+      continue;
     }
 
 
-    $("chatMessages").innerHTML =
-      `<div class="loading">
-        შეტყობინებები იტვირთება...
-      </div>`;
+    const username =
+      profile &&
+      profile.length
+        ? profile[0].username
+        : "მომხმარებელი";
 
+
+    const box =
+      document.createElement("div");
+
+    box.className =
+      "request-item";
+
+
+    box.innerHTML =
+      `<strong>
+        👤 ${escapeHtml(username)}
+      </strong>
+
+      <div class="small">
+        გიგზავნის მეგობრობის მოთხოვნას.
+      </div>
+
+      <button class="success-btn accept-btn">
+        მიღება
+      </button>
+
+      <button class="danger-btn reject-btn">
+        უარყოფა
+      </button>
+
+      <button class="chat-btn">
+        💬 ჩატი
+      </button>`;
+
+
+    box
+      .querySelector(".accept-btn")
+      .addEventListener(
+        "click",
+        async function() {
+
+          try {
+
+            await acceptFriendRequest(
+              request.id
+            );
+
+          } catch (error) {
+
+            alert(error.message);
+
+          }
+
+        }
+      );
+
+
+    box
+      .querySelector(".reject-btn")
+      .addEventListener(
+        "click",
+        async function() {
+
+          try {
+
+            await rejectFriendRequest(
+              request.id
+            );
+
+          } catch (error) {
+
+            alert(error.message);
+
+          }
+
+        }
+      );
+
+
+    box
+      .querySelector(".chat-btn")
+      .addEventListener(
+        "click",
+        async function() {
+
+          await selectUser({
+
+            id:
+              request.sender_id,
+
+            username:
+              username
+
+          });
+
+        }
+      );
+
+
+    $("friendRequests")
+      .appendChild(box);
+
+  }
+
+}
+
+
+/* =========================================================
+   SELECT USER
+========================================================= */
+
+async function selectUser(
+  user
+) {
+
+  selectedUser = {
+
+    id: user.id,
+
+    username: user.username
+
+  };
+
+
+  $("chatEmpty")
+    .classList.add("hidden");
+
+
+  $("chatBox")
+    .classList.remove("hidden");
+
+
+  $("chatUsername")
+    .textContent =
+    selectedUser.username;
+
+
+  await updateChatStatus();
+
+  await loadMessages();
+
+  $("messageInput")
+    .focus();
+
+}
+
+
+/* =========================================================
+   CHAT STATUS
+========================================================= */
+
+async function updateChatStatus() {
+
+  if (!selectedUser) {
+    return;
+  }
+
+
+  const {
+    data: friendship
+  } =
+    await supabaseClient
+      .from("friendships")
+      .select("id")
+      .or(
+        "and(user_id.eq." +
+        currentUser.id +
+        ",friend_id.eq." +
+        selectedUser.id +
+        "),and(user_id.eq." +
+        selectedUser.id +
+        ",friend_id.eq." +
+        currentUser.id +
+        ")"
+      )
+      .limit(1);
+
+
+  if (
+    friendship &&
+    friendship.length > 0
+  ) {
+
+    $("chatStatus")
+      .textContent =
+      "👥 მეგობრები";
+
+    return;
+  }
+
+
+  $("chatStatus")
+    .textContent =
+    "შეგიძლია შეტყობინების გაგზავნა მეგობრობამდე.";
+
+}
+
+
+/* =========================================================
+   LOAD MESSAGES
+========================================================= */
+
+async function loadMessages() {
+
+  if (
+    !currentUser ||
+    !selectedUser ||
+    isLoadingMessages
+  ) {
+
+    return;
+
+  }
+
+
+  isLoadingMessages = true;
+
+
+  try {
 
     const {
       data,
@@ -2862,7 +2431,15 @@
           "id,sender_id,receiver_id,message,created_at,read_at"
         )
         .or(
-          `and(sender_id.eq.${currentUser.id},receiver_id.eq.${selectedUser.id}),and(sender_id.eq.${selectedUser.id},receiver_id.eq.${currentUser.id})`
+          "and(sender_id.eq." +
+          currentUser.id +
+          ",receiver_id.eq." +
+          selectedUser.id +
+          "),and(sender_id.eq." +
+          selectedUser.id +
+          ",receiver_id.eq." +
+          currentUser.id +
+          ")"
         )
         .order(
           "created_at",
@@ -2873,44 +2450,33 @@
 
 
     if (error) {
-
-      console.error(
-        "Load messages error:",
-        error
-      );
-
-      $("chatMessages").innerHTML =
-        `<div class="message error">
-          შეტყობინებების ჩატვირთვა ვერ მოხერხდა.
-        </div>`;
-
-      return;
-
+      throw error;
     }
 
 
+    const messages =
+      data || [];
+
+
     renderMessages(
-      data || []
+      messages
     );
 
 
-    /*
-     * შემომავალი unread მესიჯების წაკითხვა.
-     */
-
     const unread =
-      (data || [])
-        .filter(
-          function(message) {
+      messages.filter(
+        function(message) {
 
-            return (
-              message.receiver_id ===
-              currentUser.id &&
-              !message.read_at
-            );
+          return (
+            message.receiver_id ===
+            currentUser.id
+            &&
+            message.read_at ===
+            null
+          );
 
-          }
-        );
+        }
+      );
 
 
     for (
@@ -2945,1152 +2511,1263 @@
 
     }
 
+
+  } catch (error) {
+
+    console.error(error);
+
+    $("messages").innerHTML =
+      `<div class="message error">
+        ${escapeHtml(error.message)}
+      </div>`;
+
+  } finally {
+
+    isLoadingMessages =
+      false;
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER MESSAGES
+========================================================= */
+
+function renderMessages(
+  messages
+) {
+
+  const key =
+    messages
+      .map(
+        function(message) {
+
+          return (
+            message.id +
+            ":" +
+            message.read_at
+          );
+
+        }
+      )
+      .join("|");
+
+
+  if (
+    key ===
+    lastMessageRenderKey
+  ) {
+
+    return;
+
   }
 
 
-  function renderMessages(messages) {
-
-    const container =
-      $("chatMessages");
+  lastMessageRenderKey =
+    key;
 
 
-    container.innerHTML = "";
+  const container =
+    $("messages");
 
 
-    if (!messages.length) {
-
-      container.innerHTML =
-        `<div class="chat-empty">
-          ჯერ შეტყობინება არ არის.<br>
-          დაწერე პირველი შეტყობინება.
-        </div>`;
-
-      return;
-
-    }
+  const shouldScroll =
+    (
+      container.scrollHeight -
+      container.scrollTop -
+      container.clientHeight
+    ) < 100;
 
 
-    for (
-      const message of messages
-    ) {
-
-      const mine =
-        message.sender_id ===
-        currentUser.id;
+  container.innerHTML = "";
 
 
-      const row =
-        document.createElement("div");
+  if (messages.length === 0) {
+
+    container.innerHTML =
+      `<div class="small">
+        ჯერ შეტყობინებები არ არის.
+      </div>`;
+
+    return;
+
+  }
 
 
-      row.className =
-        "bubble-row" +
-        (
-          mine
-            ? " mine"
-            : ""
-        );
+  for (const message of messages) {
+
+    const mine =
+      message.sender_id ===
+      currentUser.id;
 
 
-      const bubble =
-        document.createElement("div");
+    const row =
+      document.createElement("div");
 
 
-      bubble.className =
-        "bubble";
-
-
-      const readText =
+    row.className =
+      "chat-message " +
+      (
         mine
-          ? (
-              message.read_at
-                ? "✓ წაკითხულია"
-                : "✓ გაგზავნილია"
-            )
-          : "";
-
-
-      bubble.innerHTML =
-        `<div>
-          ${escapeHtml(message.message)}
-        </div>
-
-        <div class="bubble-time">
-          ${formatDate(message.created_at)}
-        </div>
-
-        ${
-          readText
-            ? `<div class="bubble-read">
-                ${readText}
-               </div>`
-            : ""
-        }`;
-
-
-      row.appendChild(
-        bubble
+          ? "mine"
+          : ""
       );
 
 
-      container.appendChild(
-        row
+    const bubble =
+      document.createElement("div");
+
+
+    bubble.className =
+      "bubble";
+
+
+    const text =
+      document.createElement("div");
+
+
+    text.textContent =
+      message.message;
+
+
+    const time =
+      document.createElement("div");
+
+
+    time.className =
+      "message-time";
+
+
+    time.textContent =
+      formatTime(
+        message.created_at
       );
 
-    }
 
+    bubble.appendChild(text);
+
+    bubble.appendChild(time);
+
+    row.appendChild(bubble);
+
+    container.appendChild(row);
+
+  }
+
+
+  if (shouldScroll) {
 
     container.scrollTop =
       container.scrollHeight;
 
   }
 
-
-  /* =========================================================
-     SEND MESSAGE
-  ========================================================= */
-
-  $("sendMessageBtn")
-    .addEventListener(
-      "click",
-      sendMessage
-    );
+}
 
 
-  $("messageInput")
-    .addEventListener(
-      "keydown",
-      function(event) {
+/* =========================================================
+   SEND MESSAGE
+========================================================= */
 
-        if (
-          event.key === "Enter" &&
-          !event.shiftKey
-        ) {
-
-          event.preventDefault();
-
-          sendMessage();
-
-        }
-
-      }
-    );
+$("sendMessageBtn").addEventListener(
+  "click",
+  sendMessage
+);
 
 
-  async function sendMessage() {
+$("messageInput").addEventListener(
+  "keydown",
+  function(event) {
 
     if (
-      !currentUser ||
-      !selectedUser
+      event.key === "Enter" &&
+      !event.shiftKey
     ) {
 
-      return;
+      event.preventDefault();
+
+      sendMessage();
 
     }
 
-
-    const input =
-      $("messageInput");
-
-
-    const text =
-      input.value.trim();
+  }
+);
 
 
-    if (!text) {
-      return;
+async function sendMessage() {
+
+  if (!selectedUser) {
+
+    return;
+
+  }
+
+
+  const text =
+    $("messageInput")
+      .value
+      .trim();
+
+
+  if (!text) {
+
+    return;
+
+  }
+
+
+  $("sendMessageBtn").disabled =
+    true;
+
+
+  $("messageStatus")
+    .textContent =
+    "იგზავნება...";
+
+
+  try {
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("messages")
+        .insert({
+
+          sender_id:
+            currentUser.id,
+
+          receiver_id:
+            selectedUser.id,
+
+          message:
+            text
+
+        });
+
+
+    if (error) {
+      throw error;
     }
 
+
+    $("messageInput")
+      .value = "";
+
+
+    $("messageStatus")
+      .textContent = "";
+
+
+    await loadMessages();
+
+    await loadConversations();
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    $("messageStatus")
+      .textContent =
+      "შეცდომა: " +
+      error.message;
+
+  } finally {
 
     $("sendMessageBtn").disabled =
-      true;
+      false;
+
+  }
+
+}
 
 
-    try {
+/* =========================================================
+   CONVERSATIONS
+========================================================= */
 
-      const {
-        error
-      } =
-        await supabaseClient
-          .from("messages")
-          .insert({
+async function loadConversations() {
 
-            sender_id:
-              currentUser.id,
-
-            receiver_id:
-              selectedUser.id,
-
-            message:
-              text
-
-          });
+  if (!currentUser) {
+    return;
+  }
 
 
-      if (error) {
-        throw error;
-      }
-
-
-      input.value = "";
-
-
-      await loadMessages();
-
-      await loadConversations();
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "შეტყობინების გაგზავნა ვერ მოხერხდა: " +
-        error.message
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("messages")
+      .select(
+        "id,sender_id,receiver_id,message,created_at,read_at"
+      )
+      .or(
+        "sender_id.eq." +
+        currentUser.id +
+        ",receiver_id.eq." +
+        currentUser.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
       );
 
-    } finally {
 
-      $("sendMessageBtn").disabled =
-        false;
+  if (error) {
 
-      input.focus();
+    console.error(error);
+
+    return;
+
+  }
+
+
+  const conversations =
+    new Map();
+
+
+  for (const message of data || []) {
+
+    const otherId =
+      message.sender_id ===
+      currentUser.id
+        ? message.receiver_id
+        : message.sender_id;
+
+
+    if (
+      !conversations.has(
+        otherId
+      )
+    ) {
+
+      conversations.set(
+        otherId,
+        {
+          lastMessage:
+            message,
+
+          unread: 0,
+
+          username:
+            null
+        }
+      );
+
+    }
+
+
+    if (
+      message.receiver_id ===
+      currentUser.id &&
+      message.read_at ===
+      null
+    ) {
+
+      conversations
+        .get(otherId)
+        .unread++;
 
     }
 
   }
 
 
-  /* =========================================================
-     REALTIME MESSAGES
-  ========================================================= */
-
-  function setupRealtime() {
-
-    if (messageChannel) {
-
-      supabaseClient
-        .removeChannel(
-          messageChannel
-        );
-
-    }
-
-
-    messageChannel =
-      supabaseClient
-        .channel(
-          "messages-" +
-          currentUser.id +
-          "-" +
-          Date.now()
-        )
-
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "messages"
-          },
-          async function(payload) {
-
-            const message =
-              payload.new;
-
-
-            if (
-              message.sender_id !== currentUser.id &&
-              message.receiver_id !== currentUser.id
-            ) {
-
-              return;
-
-            }
-
-
-            /*
-             * შემომავალი მესიჯი.
-             */
-
-            if (
-              message.receiver_id === currentUser.id
-            ) {
-
-              await loadConversations();
-
-
-              if (
-                selectedUser &&
-                selectedUser.id ===
-                message.sender_id
-              ) {
-
-                await loadMessages();
-
-              } else {
-
-                await showIncomingMessage(
-                  message
-                );
-
-              }
-
-            }
-
-
-            /*
-             * საკუთარი გაგზავნილი მესიჯი.
-             */
-
-            if (
-              message.sender_id === currentUser.id
-            ) {
-
-              if (
-                selectedUser &&
-                selectedUser.id ===
-                message.receiver_id
-              ) {
-
-                await loadMessages();
-
-              }
-
-              await loadConversations();
-
-            }
-
-          }
-        )
-
-        .subscribe(
-          function(status) {
-
-            console.log(
-              "Messages Realtime:",
-              status
-            );
-
-          }
-        );
-
-
-    /*
-     * დამატებითი fallback.
-     */
-
-    if (messageRefreshTimer) {
-
-      clearInterval(
-        messageRefreshTimer
-      );
-
-    }
-
-
-    messageRefreshTimer =
-      setInterval(
-        async function() {
-
-          if (!currentUser) {
-            return;
-          }
-
-
-          await loadConversations();
-
-
-          if (selectedUser) {
-
-            await loadMessages();
-
-          }
-
-
-          await loadFriendRequests();
-
-        },
-        3000
-      );
-
-  }
-
-
-  /* =========================================================
-     INCOMING MESSAGE NOTICE
-  ========================================================= */
-
-  async function showIncomingMessage(
-    message
+  if (
+    conversations.size ===
+    0
   ) {
 
-    let username =
-      "მომხმარებელი";
+    $("conversations").innerHTML =
+      `<div class="small">
+        ჯერ ჩატი არ გაქვს.
+      </div>`;
+
+    return;
+
+  }
 
 
-    try {
-
-      const {
-        data
-      } =
-        await supabaseClient.rpc(
-          "find_profile_by_id",
-          {
-            profile_id:
-              message.sender_id
-          }
-        );
+  $("conversations").innerHTML =
+    `<div class="loading">
+      იტვირთება...
+    </div>`;
 
 
-      if (
-        data &&
-        data.length
-      ) {
+  for (
+    const [
+      userId,
+      conversation
+    ]
+    of conversations
+  ) {
 
-        username =
-          data[0].username;
+    const {
+      data: profile
+    } =
+      await supabaseClient.rpc(
+        "find_profile_by_id",
+        {
+          profile_id:
+            userId
+        }
+      );
 
-      }
 
-    } catch (error) {
+    conversation.username =
+      profile &&
+      profile.length
+        ? profile[0].username
+        : "მომხმარებელი";
 
-      console.error(error);
+  }
+
+
+  $("conversations").innerHTML = "";
+
+
+  for (
+    const [
+      userId,
+      conversation
+    ]
+    of conversations
+  ) {
+
+    const item =
+      document.createElement("div");
+
+
+    item.className =
+      "conversation-item";
+
+
+    if (
+      selectedUser &&
+      selectedUser.id ===
+      userId
+    ) {
+
+      item.classList.add(
+        "active"
+      );
 
     }
 
 
-    $("incomingNotice").innerHTML =
-      `<div
-        id="incomingMessageNotice"
-        class="incoming-notice"
-      >
-        💬 <strong>ახალი შეტყობინება</strong>
-        <br>
-        👤 ${escapeHtml(username)}
-        <br>
-        <small>
-          ${escapeHtml(message.message)}
-        </small>
-        <br>
-        <button class="secondary">
-          ჩატის გახსნა
-        </button>
+    if (
+      conversation.unread > 0
+    ) {
+
+      item.classList.add(
+        "unread"
+      );
+
+    }
+
+
+    const last =
+      conversation.lastMessage.message;
+
+
+    item.innerHTML =
+      `<strong>
+        👤 ${escapeHtml(
+          conversation.username
+        )}
+
+        ${
+          conversation.unread > 0
+            ? `<span class="badge">
+                ${conversation.unread}
+              </span>`
+            : ""
+        }
+
+      </strong>
+
+      <div class="small">
+        ${escapeHtml(
+          last.length > 50
+            ? last.substring(0, 50) + "..."
+            : last
+        )}
+      </div>
+
+      <div class="small">
+        ${formatTime(
+          conversation.lastMessage.created_at
+        )}
       </div>`;
 
 
-    $("incomingMessageNotice")
-      .querySelector("button")
-      .addEventListener(
-        "click",
-        function() {
-
-          selectUser({
-            id:
-              message.sender_id,
-
-            username:
-              username
-          });
-
-
-          $("incomingNotice")
-            .innerHTML = "";
-
-        }
-      );
-
-  }
-
-
-  /* =========================================================
-     REALTIME FRIEND REQUESTS
-  ========================================================= */
-
-  function setupFriendRealtime() {
-
-    if (friendChannel) {
-
-      supabaseClient
-        .removeChannel(
-          friendChannel
-        );
-
-    }
-
-
-    friendChannel =
-      supabaseClient
-        .channel(
-          "friends-" +
-          currentUser.id +
-          "-" +
-          Date.now()
-        )
-
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "friend_requests"
-          },
-          async function(payload) {
-
-            if (
-              payload.new.receiver_id ===
-              currentUser.id
-            ) {
-
-              await loadFriendRequests();
-
-            }
-
-          }
-        )
-
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "friend_requests"
-          },
-          async function(payload) {
-
-            if (
-              payload.new.receiver_id ===
-              currentUser.id ||
-              payload.new.sender_id ===
-              currentUser.id
-            ) {
-
-              await loadFriendRequests();
-
-              await loadConversations();
-
-            }
-
-          }
-        )
-
-        .subscribe(
-          function(status) {
-
-            console.log(
-              "Friend Realtime:",
-              status
-            );
-
-          }
-        );
-
-  }
-
-
-  /* =========================================================
-     FILE UPLOAD
-  ========================================================= */
-
-  $("chooseFileBtn")
-    .addEventListener(
+    item.addEventListener(
       "click",
-      function() {
+      async function() {
 
-        $("fileInput").click();
+        await selectUser({
 
-      }
-    );
+          id:
+            userId,
+
+          username:
+            conversation.username
+
+        });
 
 
-  $("fileInput")
-    .addEventListener(
-      "change",
-      function(event) {
-
-        const files =
-          Array.from(
-            event.target.files
-          );
-
-        uploadFiles(files);
+        await loadConversations();
 
       }
     );
 
 
-  const uploadArea =
-    $("uploadArea");
+    $("conversations")
+      .appendChild(item);
+
+  }
+
+}
 
 
-  uploadArea
-    .addEventListener(
-      "dragover",
-      function(event) {
+/* =========================================================
+   FILE UPLOAD
+========================================================= */
 
-        event.preventDefault();
+$("uploadBtn").addEventListener(
+  "click",
+  uploadFile
+);
 
-        uploadArea.classList.add(
-          "dragover"
+
+async function uploadFile() {
+
+  const input =
+    $("fileInput");
+
+
+  if (
+    !input.files ||
+    input.files.length === 0
+  ) {
+
+    $("fileMessage")
+      .textContent =
+      "ჯერ აირჩიე ფაილი.";
+
+    return;
+
+  }
+
+
+  const file =
+    input.files[0];
+
+
+  if (
+    file.size >
+    50 * 1024 * 1024
+  ) {
+
+    $("fileMessage")
+      .textContent =
+      "ფაილი 50 MB-ზე დიდი არ უნდა იყოს.";
+
+    return;
+
+  }
+
+
+  $("uploadBtn").disabled =
+    true;
+
+
+  $("fileMessage")
+    .textContent =
+    "იტვირთება...";
+
+
+  try {
+
+    const path =
+      currentUser.id +
+      "/" +
+      crypto.randomUUID() +
+      "-" +
+      file.name;
+
+
+    const {
+      error: uploadError
+    } =
+      await supabaseClient
+        .storage
+        .from("user-files")
+        .upload(
+          path,
+          file,
+          {
+            upsert: false,
+
+            contentType:
+              file.type ||
+              "application/octet-stream"
+          }
         );
 
-      }
-    );
+
+    if (uploadError) {
+      throw uploadError;
+    }
 
 
-  uploadArea
-    .addEventListener(
-      "dragleave",
-      function() {
-
-        uploadArea.classList.remove(
-          "dragover"
-        );
-
-      }
-    );
+    const expires =
+      new Date(
+        Date.now() +
+        3 * 24 * 60 * 60 * 1000
+      )
+      .toISOString();
 
 
-  uploadArea
-    .addEventListener(
-      "drop",
-      function(event) {
+    const {
+      error: dbError
+    } =
+      await supabaseClient
+        .from("files")
+        .insert({
 
-        event.preventDefault();
+          user_id:
+            currentUser.id,
 
-        uploadArea.classList.remove(
-          "dragover"
-        );
+          file_name:
+            file.name,
+
+          storage_path:
+            path,
+
+          file_type:
+            file.type ||
+            "application/octet-stream",
+
+          file_size:
+            file.size,
+
+          expires_at:
+            expires
+
+        });
 
 
-        const files =
-          Array.from(
-            event.dataTransfer.files
-          );
+    if (dbError) {
 
+      await supabaseClient
+        .storage
+        .from("user-files")
+        .remove([path]);
 
-        uploadFiles(files);
-
-      }
-    );
-
-
-  async function uploadFiles(files) {
-
-    if (
-      !currentUser ||
-      !files ||
-      !files.length
-    ) {
-
-      return;
+      throw dbError;
 
     }
 
 
-    $("uploadMessage").innerHTML = "";
+    input.value = "";
 
 
-    for (
-      const file of files
-    ) {
+    $("fileMessage")
+      .textContent =
+      "ფაილი წარმატებით აიტვირთა.";
 
-      try {
-
-        const MAX_SIZE =
-          50 * 1024 * 1024;
-
-
-        if (
-          file.size > MAX_SIZE
-        ) {
-
-          showMessage(
-            $("uploadMessage"),
-            `${file.name} ძალიან დიდია. მაქსიმუმ 50 MB.`,
-            "error"
-          );
-
-          continue;
-
-        }
-
-
-        const fileId =
-          crypto.randomUUID();
-
-
-        const safeName =
-          file.name
-            .replace(
-              /[^a-zA-Z0-9._-]/g,
-              "_"
-            );
-
-
-        const storagePath =
-          currentUser.id +
-          "/" +
-          fileId +
-          "-" +
-          safeName;
-
-
-        const {
-          error: uploadError
-        } =
-          await supabaseClient
-            .storage
-            .from("user-files")
-            .upload(
-              storagePath,
-              file,
-              {
-                upsert: false,
-                contentType:
-                  file.type ||
-                  "application/octet-stream"
-              }
-            );
-
-
-        if (uploadError) {
-          throw uploadError;
-        }
-
-
-        const expiresAt =
-          new Date(
-            Date.now() +
-            3 * 24 * 60 * 60 * 1000
-          ).toISOString();
-
-
-        const {
-          error: dbError
-        } =
-          await supabaseClient
-            .from("files")
-            .insert({
-
-              id:
-                fileId,
-
-              user_id:
-                currentUser.id,
-
-              file_name:
-                file.name,
-
-              storage_path:
-                storagePath,
-
-              file_type:
-                file.type ||
-                null,
-
-              file_size:
-                file.size,
-
-              expires_at:
-                expiresAt
-
-            });
-
-
-        if (dbError) {
-
-          await supabaseClient
-            .storage
-            .from("user-files")
-            .remove([
-              storagePath
-            ]);
-
-          throw dbError;
-
-        }
-
-
-        showMessage(
-          $("uploadMessage"),
-          `${file.name} წარმატებით აიტვირთა.`,
-          "success"
-        );
-
-
-      } catch (error) {
-
-        console.error(error);
-
-        showMessage(
-          $("uploadMessage"),
-          `${file.name}: ${error.message}`,
-          "error"
-        );
-
-      }
-
-    }
-
-
-    $("fileInput").value = "";
 
     await loadFiles();
 
+
+  } catch (error) {
+
+    console.error(error);
+
+    $("fileMessage")
+      .textContent =
+      "შეცდომა: " +
+      error.message;
+
+  } finally {
+
+    $("uploadBtn").disabled =
+      false;
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD FILES
+========================================================= */
+
+async function loadFiles() {
+
+  if (!currentUser) {
+    return;
   }
 
 
-  /* =========================================================
-     LOAD FILES
-  ========================================================= */
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("files")
+      .select(
+        "id,file_name,storage_path,file_type,file_size,created_at,expires_at"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
 
-  async function loadFiles() {
 
-    if (!currentUser) {
-      return;
-    }
+  if (error) {
 
+    console.error(error);
 
-    $("fileList").innerHTML =
-      `<div class="loading">
-        ფაილები იტვირთება...
+    $("filesList").innerHTML =
+      `<div class="message error">
+        ${escapeHtml(error.message)}
       </div>`;
 
+    return;
+
+  }
+
+
+  if (!data || data.length === 0) {
+
+    $("filesList").innerHTML =
+      `<div class="small">
+        ფაილები არ არის.
+      </div>`;
+
+    return;
+
+  }
+
+
+  $("filesList").innerHTML = "";
+
+
+  for (const file of data) {
+
+    const item =
+      document.createElement("div");
+
+
+    item.className =
+      "file-item";
+
+
+    const expires =
+      new Date(
+        file.expires_at
+      );
+
+
+    item.innerHTML =
+      `<strong>
+        📄 ${escapeHtml(
+          file.file_name
+        )}
+      </strong>
+
+      <div class="small">
+        ვადა:
+        ${formatTime(expires)}
+      </div>
+
+      <button class="open-file">
+        გახსნა
+      </button>
+
+      <button class="delete-file danger-btn">
+        წაშლა
+      </button>`;
+
+
+    item
+      .querySelector(
+        ".open-file"
+      )
+      .addEventListener(
+        "click",
+        async function() {
+
+          await openFile(file);
+
+        }
+      );
+
+
+    item
+      .querySelector(
+        ".delete-file"
+      )
+      .addEventListener(
+        "click",
+        async function() {
+
+          await deleteFile(file);
+
+        }
+      );
+
+
+    $("filesList")
+      .appendChild(item);
+
+  }
+
+}
+
+
+/* =========================================================
+   OPEN FILE
+========================================================= */
+
+async function openFile(
+  file
+) {
+
+  try {
 
     const {
       data,
       error
     } =
       await supabaseClient
-        .from("files")
-        .select(
-          "id,file_name,storage_path,file_type,file_size,created_at,expires_at"
-        )
-        .eq(
-          "user_id",
-          currentUser.id
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
+        .storage
+        .from("user-files")
+        .createSignedUrl(
+          file.storage_path,
+          60 * 10
         );
 
 
     if (error) {
+      throw error;
+    }
 
-      console.error(error);
 
-      $("fileList").innerHTML =
-        `<div class="message error">
-          ფაილების ჩატვირთვა ვერ მოხერხდა.
-        </div>`;
+    if (!data || !data.signedUrl) {
 
-      return;
+      throw new Error(
+        "ფაილის ბმული ვერ შეიქმნა."
+      );
 
     }
 
 
-    $("fileList").innerHTML = "";
+    window.open(
+      data.signedUrl,
+      "_blank"
+    );
+
+
+  } catch (error) {
+
+    alert(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   DELETE FILE
+========================================================= */
+
+async function deleteFile(
+  file
+) {
+
+  if (
+    !confirm(
+      "ნამდვილად გინდა ფაილის წაშლა?"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const {
+      error: storageError
+    } =
+      await supabaseClient
+        .storage
+        .from("user-files")
+        .remove([
+          file.storage_path
+        ]);
+
+
+    if (storageError) {
+      throw storageError;
+    }
+
+
+    const {
+      error: dbError
+    } =
+      await supabaseClient
+        .from("files")
+        .delete()
+        .eq(
+          "id",
+          file.id
+        );
+
+
+    if (dbError) {
+      throw dbError;
+    }
+
+
+    await loadFiles();
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   REALTIME
+========================================================= */
+
+function subscribeRealtime() {
+
+  if (!currentUser) {
+    return;
+  }
+
+
+  if (messageChannel) {
+
+    supabaseClient
+      .removeChannel(
+        messageChannel
+      );
+
+  }
+
+
+  if (friendRequestChannel) {
+
+    supabaseClient
+      .removeChannel(
+        friendRequestChannel
+      );
+
+  }
+
+
+  messageChannel =
+    supabaseClient
+      .channel(
+        "messages-" +
+        currentUser.id +
+        "-" +
+        Date.now()
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+
+          schema: "public",
+
+          table: "messages"
+        },
+        async function(payload) {
+
+          const message =
+            payload.new;
+
+
+          if (
+            message.sender_id !==
+              currentUser.id &&
+            message.receiver_id !==
+              currentUser.id
+          ) {
+
+            return;
+
+          }
+
+
+          if (
+            selectedUser &&
+            (
+              (
+                message.sender_id ===
+                selectedUser.id &&
+                message.receiver_id ===
+                currentUser.id
+              )
+              ||
+              (
+                message.receiver_id ===
+                selectedUser.id &&
+                message.sender_id ===
+                currentUser.id
+              )
+            )
+          ) {
+
+            lastMessageRenderKey =
+              "";
+
+            await loadMessages();
+
+          }
+
+
+          await loadConversations();
+
+        }
+      )
+      .subscribe();
+
+
+  friendRequestChannel =
+    supabaseClient
+      .channel(
+        "friend-requests-" +
+        currentUser.id +
+        "-" +
+        Date.now()
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+
+          schema: "public",
+
+          table: "friend_requests"
+        },
+        async function(payload) {
+
+          const row =
+            payload.new ||
+            payload.old;
+
+
+          if (!row) {
+            return;
+          }
+
+
+          if (
+            row.sender_id ===
+              currentUser.id ||
+            row.receiver_id ===
+              currentUser.id
+          ) {
+
+            await loadFriendRequests();
+
+          }
+
+        }
+      )
+      .subscribe();
+
+}
+
+
+/* =========================================================
+   POLLING FALLBACK
+========================================================= */
+
+function startPolling() {
+
+  stopPolling();
+
+
+  pollingTimer =
+    setInterval(
+      async function() {
+
+        if (!currentUser) {
+          return;
+        }
+
+
+        await loadFriendRequests();
+
+        await loadConversations();
+
+
+        if (selectedUser) {
+
+          lastMessageRenderKey =
+            "";
+
+          await loadMessages();
+
+        }
+
+      },
+      3000
+    );
+
+}
+
+
+function stopPolling() {
+
+  if (pollingTimer) {
+
+    clearInterval(
+      pollingTimer
+    );
+
+    pollingTimer =
+      null;
+
+  }
+
+}
+
+
+/* =========================================================
+   AUTH STATE
+========================================================= */
+
+supabaseClient.auth.onAuthStateChange(
+  async function(event, session) {
+
+    if (
+      event ===
+      "PASSWORD_RECOVERY"
+    ) {
+
+      $("authScreen")
+        .classList.remove("hidden");
+
+      $("appScreen")
+        .classList.add("hidden");
+
+      $("loginBox")
+        .classList.add("hidden");
+
+      $("registerBox")
+        .classList.add("hidden");
+
+      $("forgotBox")
+        .classList.add("hidden");
+
+      $("recoveryBox")
+        .classList.remove("hidden");
+
+      return;
+
+    }
 
 
     if (
-      !data ||
-      !data.length
+      session &&
+      session.user
     ) {
 
-      $("fileList").innerHTML =
-        `<div class="message">
-          ჯერ ფაილი არ აგიტვირთავს.
-        </div>`;
+      if (!currentUser) {
 
-      return;
+        try {
+
+          await startApp();
+
+        } catch (error) {
+
+          console.error(error);
+
+          showMessage(
+            $("loginMessage"),
+            error.message,
+            "error"
+          );
+
+        }
+
+      }
 
     }
 
+  }
+);
 
-    for (
-      const file of data
+
+/* =========================================================
+   INITIAL SESSION
+========================================================= */
+
+(async function init() {
+
+  try {
+
+    const {
+      data
+    } =
+      await supabaseClient.auth.getSession();
+
+
+    if (
+      data &&
+      data.session &&
+      data.session.user
     ) {
 
-      const item =
-        document.createElement("div");
-
-      item.className =
-        "file-item";
-
-
-      const info =
-        document.createElement("div");
-
-      info.className =
-        "file-info";
-
-
-      info.innerHTML =
-        `<div class="file-name">
-          ${escapeHtml(file.file_name)}
-        </div>
-
-        <div class="file-meta">
-          ატვირთული:
-          ${formatDate(file.created_at)}
-          <br>
-          იშლება:
-          ${formatDate(file.expires_at)}
-          <br>
-          ზომა:
-          ${formatBytes(file.file_size)}
-        </div>`;
-
-
-      const actions =
-        document.createElement("div");
-
-
-      actions.className =
-        "file-actions";
-
-
-      const openBtn =
-        document.createElement("button");
-
-
-      openBtn.textContent =
-        "ნახვა / გახსნა";
-
-
-      openBtn.addEventListener(
-        "click",
-        function() {
-
-          openFile(file);
-
-        }
-      );
-
-
-      const deleteBtn =
-        document.createElement("button");
-
-
-      deleteBtn.textContent =
-        "წაშლა";
-
-
-      deleteBtn.className =
-        "danger";
-
-
-      deleteBtn.addEventListener(
-        "click",
-        function() {
-
-          deleteFile(file);
-
-        }
-      );
-
-
-      actions.appendChild(
-        openBtn
-      );
-
-      actions.appendChild(
-        deleteBtn
-      );
-
-
-      item.appendChild(
-        info
-      );
-
-      item.appendChild(
-        actions
-      );
-
-
-      $("fileList")
-        .appendChild(item);
+      await startApp();
 
     }
+
+  } catch (error) {
+
+    console.error(
+      "Init error:",
+      error
+    );
 
   }
 
-
-  /* =========================================================
-     OPEN FILE
-  ========================================================= */
-
-  async function openFile(file) {
-
-    try {
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .storage
-          .from("user-files")
-          .createSignedUrl(
-            file.storage_path,
-            60 * 60
-          );
-
-
-      if (error) {
-        throw error;
-      }
-
-
-      if (!data?.signedUrl) {
-
-        throw new Error(
-          "ფაილის ბმული ვერ შეიქმნა."
-        );
-
-      }
-
-
-      window.open(
-        data.signedUrl,
-        "_blank"
-      );
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "ფაილის გახსნა ვერ მოხერხდა: " +
-        error.message
-      );
-
-    }
-
-  }
-
-
-  /* =========================================================
-     DELETE FILE
-  ========================================================= */
-
-  async function deleteFile(file) {
-
-    const confirmed =
-      confirm(
-        `წავშალოთ "${file.file_name}"?`
-      );
-
-
-    if (!confirmed) {
-      return;
-    }
-
-
-    try {
-
-      const {
-        error: storageError
-      } =
-        await supabaseClient
-          .storage
-          .from("user-files")
-          .remove([
-            file.storage_path
-          ]);
-
-
-      if (storageError) {
-        throw storageError;
-      }
-
-
-      const {
-        error: dbError
-      } =
-        await supabaseClient
-          .from("files")
-          .delete()
-          .eq(
-            "id",
-            file.id
-          )
-          .eq(
-            "user_id",
-            currentUser.id
-          );
-
-
-      if (dbError) {
-        throw dbError;
-      }
-
-
-      await loadFiles();
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "ფაილის წაშლა ვერ მოხერხდა: " +
-        error.message
-      );
-
-    }
-
-  }
-
-
-  /* =========================================================
-     START APP
-  ========================================================= */
-
-  async function startApp() {
-
-    try {
-
-      const {
-        data
-      } =
-        await supabaseClient.auth
-          .getSession();
-
-
-      if (data.session) {
-
-        currentUser =
-          data.session.user;
-
-        await loadCurrentUser();
-
-      } else {
-
-        showLoggedOut();
-
-      }
-
-    } catch (error) {
-
-      console.error(error);
-
-      showLoggedOut();
-
-    }
-
-  }
-
-
-  startApp();
+})();
 
 </script>
 
 </body>
 </html>
-```
